@@ -13,14 +13,22 @@ This repo is a complete AI toolkit for salons & spas. Every skill is a standalon
 
 | Skill | What it does | Time saved |
 |-------|-------------|------------|
-| 💇 Client Consultation Notes | Document client preferences, formulas, and service history in a searchable format. | ~5 min/client |
-| 📱 Social Caption Writer | Generate engaging captions for before/after photos, promotions, and seasonal campaigns. | ~10 min/post |
-| 📅 Booking Confirmation Sequence | Draft confirmation, reminder, and prep-instruction messages for upcoming appointments. | ~5 min/booking |
-| 🧴 Retail Product Recommender | Suggest take-home products based on the service performed and client hair/skin type. | ~3 min/client |
-| 📚 Staff Training Guide | Create step-by-step guides for new techniques, products, or service protocols. | ~30 min/guide |
-| ⭐ Review Response Writer | Craft warm, professional responses to Google and Yelp reviews. | ~5 min/review |
+| Client Consultation Notes | Produce structured, searchable consultation notes that capture formulas, processing times, tool settings, client preferences, contraindications, and service history in a format any provider can pick up and deliver a consistent service from. | ~8 min/client |
+| Staff Training Guide Builder | Create structured, step-by-step training guides for salon and spa staff covering new techniques, product knowledge, service protocols, safety procedures, and client interaction standards. | ~30 min/guide |
+| Retail Product Recommender | Generate personalized take-home product recommendations based on the service just performed, the client's hair or skin type, their lifestyle, and their budget comfort level. | ~5 min/client |
+| SMS & WhatsApp Marketing Campaign Builder | Create targeted, concise SMS or WhatsApp marketing messages for salon and spa promotions. | ~20 min/campaign |
+| Salon & Spa Loyalty Program Builder | Design a loyalty program tailored to a salon or spa's specific client base, service mix, and retention goals. | ~45 min/program design |
+| Salon & Spa Referral Program Builder | Design a two-sided referral program that converts existing clients into brand advocates and new-client acquisition channels. | ~30 min/program design |
+| Social Media Caption Writer | Generate platform-optimized, on-brand captions for salon and spa social media posts — including before/after transformations, promotions, educational content, team spotlights, and seasonal campaigns. | ~10 min/post |
+| Booking Confirmation Sequence | Produce the full multi-touch messaging sequence that turns a new booking into a confirmed, well-prepared, on-time client: the instant confirmation, the prep instructions, the reminder, and the day-of welcome. | ~10 min/booking |
+| Client Win-Back & No-Show Recovery Sequence | Generate personalized re-engagement message sequences for lapsed clients (no visit in 60-90+ days) and clients who missed recent appointments. | ~15 min/campaign |
+| Review Response Writer | Craft public-facing responses to Google, Yelp, Facebook, Fresha, and booking-platform reviews that (1) thank and reinforce happy clients, (2) de-escalate negative reviews without being defensive or legally risky, (3) pull future readers toward the brand, and (4) prompt rebooking where appropriate. | ~8 min/review |
+| Virtual Consultation Intake Builder | Generate a structured pre-visit digital consultation questionnaire and produce a stylist/therapist prep summary from the client's responses. | ~10 min/client |
+| Email Drafter | Turn rough notes into a professional email matching your company's voice and tone. | ~10 min/use |
+| Meeting Summarizer | Summarize meeting notes into action items, decisions, and follow-ups. | ~10 min/use |
+| Review Responder | Craft professional responses to online reviews — both positive and negative. | ~10 min/use |
 
-**Total time saved per use: ~58+ minutes across all skills.**
+**Total time saved per use: ~221+ minutes across all skills.**
 
 ## Quick Start
 
