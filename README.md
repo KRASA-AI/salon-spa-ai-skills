@@ -15,6 +15,7 @@ This repo is a complete AI toolkit for salons & spas. Every skill is a standalon
 |-------|-------------|------------|
 | Client Consultation Notes | Produce structured, searchable consultation notes that capture formulas, processing times, tool settings, client preferences, contraindications, and service history in a format any provider can pick up and deliver a consistent service from. | ~8 min/client |
 | Staff Training Guide Builder | Create structured, step-by-step training guides for salon and spa staff covering new techniques, product knowledge, service protocols, safety procedures, and client interaction standards. | ~30 min/guide |
+| Waitlist Gap-Fill Outreach Generator | Turn a last-minute cancellation, no-show, or unbooked stretch into a filled chair by generating short, time-sensitive outreach to the right waitlisted clients. | ~10 min per gap |
 | Retail Product Recommender | Generate personalized take-home product recommendations based on the service just performed, the client's hair or skin type, their lifestyle, and their budget comfort level. | ~5 min/client |
 | SMS & WhatsApp Marketing Campaign Builder | Create targeted, concise SMS or WhatsApp marketing messages for salon and spa promotions. | ~20 min/campaign |
 | Salon & Spa Loyalty Program Builder | Design a loyalty program tailored to a salon or spa's specific client base, service mix, and retention goals. | ~45 min/program design |
@@ -22,13 +23,14 @@ This repo is a complete AI toolkit for salons & spas. Every skill is a standalon
 | Social Media Caption Writer | Generate platform-optimized, on-brand captions for salon and spa social media posts — including before/after transformations, promotions, educational content, team spotlights, and seasonal campaigns. | ~10 min/post |
 | Booking Confirmation Sequence | Produce the full multi-touch messaging sequence that turns a new booking into a confirmed, well-prepared, on-time client: the instant confirmation, the prep instructions, the reminder, and the day-of welcome. | ~10 min/booking |
 | Client Win-Back & No-Show Recovery Sequence | Generate personalized re-engagement message sequences for lapsed clients (no visit in 60-90+ days) and clients who missed recent appointments. | ~15 min/campaign |
+| Med Spa Treatment-Cadence Rebooking Reminders | Generate treatment-specific rebooking reminders timed to the clinical cadence of each aesthetic service — Botox at 10–14 weeks, filler at 6–12 months, chemical peel series at 3–6 weeks, laser hair removal at 4–6 weeks, HydraFacial at 4 weeks, CoolSculpting follow-up at 8–12 weeks. | ~20 min/cadence campaign |
 | Review Response Writer | Craft public-facing responses to Google, Yelp, Facebook, Fresha, and booking-platform reviews that (1) thank and reinforce happy clients, (2) de-escalate negative reviews without being defensive or legally risky, (3) pull future readers toward the brand, and (4) prompt rebooking where appropriate. | ~8 min/review |
 | Virtual Consultation Intake Builder | Generate a structured pre-visit digital consultation questionnaire and produce a stylist/therapist prep summary from the client's responses. | ~10 min/client |
-| Email Drafter | Turn rough notes into a professional email matching your company's voice and tone. | ~10 min/use |
-| Meeting Summarizer | Summarize meeting notes into action items, decisions, and follow-ups. | ~10 min/use |
-| Review Responder | Craft professional responses to online reviews — both positive and negative. | ~10 min/use |
+| Quick Review Reply (Salon & Spa) | Generate a single, on-brand reply to an online review in under 30 seconds. | ~5 min/reply |
+| Salon & Spa Email Drafter | Turn rough notes into a polished, salon-or-spa-appropriate email that matches the business's voice, respects the client relationship, and is ready to send. | ~15 min/email |
+| Salon & Spa Meeting Summarizer | Turn raw meeting notes, transcript, or bullet points from a salon, day-spa, or med-spa meeting into a structured summary that a busy owner or lead actually reads — separating decisions from action items from open questions, and surfacing the few metrics that matter for this meeting type. | ~20 min/meeting |
 
-**Total time saved per use: ~221+ minutes across all skills.**
+**Total time saved per use: ~261+ minutes across all skills.**
 
 ## Quick Start
 
