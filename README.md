@@ -21,6 +21,7 @@ This repo is a complete AI toolkit for salons & spas. Every skill is a standalon
 | Salon & Spa Loyalty Program Builder | Design a loyalty program tailored to a salon or spa's specific client base, service mix, and retention goals. | ~45 min/program design |
 | Salon & Spa Referral Program Builder | Design a two-sided referral program that converts existing clients into brand advocates and new-client acquisition channels. | ~30 min/program design |
 | Social Media Caption Writer | Generate platform-optimized, on-brand captions for salon and spa social media posts — including before/after transformations, promotions, educational content, team spotlights, and seasonal campaigns. | ~10 min/post |
+| Social Media Content Calendar & Strategy Planner | Build a complete monthly social media content calendar for a salon or spa — mapping content pillars, post types, platform assignments, cadence, and seasonal hooks into a ready-to-execute schedule. | ~60 min/monthly calendar |
 | Booking Confirmation Sequence | Produce the full multi-touch messaging sequence that turns a new booking into a confirmed, well-prepared, on-time client: the instant confirmation, the prep instructions, the reminder, and the day-of welcome. | ~10 min/booking |
 | Client Win-Back & No-Show Recovery Sequence | Generate personalized re-engagement message sequences for lapsed clients (no visit in 60-90+ days) and clients who missed recent appointments. | ~15 min/campaign |
 | Med Spa Treatment-Cadence Rebooking Reminders | Generate treatment-specific rebooking reminders timed to the clinical cadence of each aesthetic service — Botox at 10–14 weeks, filler at 6–12 months, chemical peel series at 3–6 weeks, laser hair removal at 4–6 weeks, HydraFacial at 4 weeks, CoolSculpting follow-up at 8–12 weeks. | ~20 min/cadence campaign |
@@ -30,7 +31,7 @@ This repo is a complete AI toolkit for salons & spas. Every skill is a standalon
 | Salon & Spa Email Drafter | Turn rough notes into a polished, salon-or-spa-appropriate email that matches the business's voice, respects the client relationship, and is ready to send. | ~15 min/email |
 | Salon & Spa Meeting Summarizer | Turn raw meeting notes, transcript, or bullet points from a salon, day-spa, or med-spa meeting into a structured summary that a busy owner or lead actually reads — separating decisions from action items from open questions, and surfacing the few metrics that matter for this meeting type. | ~20 min/meeting |
 
-**Total time saved per use: ~261+ minutes across all skills.**
+**Total time saved per use: ~321+ minutes across all skills.**
 
 ## Quick Start
 
