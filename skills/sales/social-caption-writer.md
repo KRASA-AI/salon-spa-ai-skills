@@ -4,8 +4,8 @@ category: sales
 tools: [claude, chatgpt]
 difficulty: intermediate
 time_saved: "~10 min/post"
-version: 2.0
-last_eval_score: 4.4
+version: 2.1
+last_eval_score: 8.9
 ---
 
 # Social Media Caption Writer
@@ -67,6 +67,41 @@ Load business context from `config.yml` and reference `knowledge-base/terminolog
    - Promo: "Offer ends [date] — book now via link in bio"
 
 6. **Brand voice compliance:** Match the tone from `config.yml` -> `voice`. Never use words on the `never_use` list. Incorporate `always_use` phrases where natural (not forced).
+
+### 2026 Trend-Cue Library (Reels & TikTok)
+
+Refresh quarterly — platforms reward posts that ride current conventions, not last year's templates.
+
+- **Hook-at-3-seconds rule.** If the viewer can't tell the "what" and the "why they should care" in the first 3 seconds, they swipe. The on-screen text overlay must land both by second 3.
+- **Audio pairing conventions.** Beauty content performs best with: (a) trending-audio original sounds that have 5K–500K uses (past the earliest-adopter bump, not saturated), (b) voiceover-led educational audio that plays well on mute with captions, or (c) licensed indie tracks for mood/aesthetic pieces. Avoid Top-40 cleared audio — it flattens algorithmic favor.
+- **Transition archetypes** that still land: the finger-snap wardrobe/outfit change → chair reveal, the mirror-clean-reveal for facials, the foil-unwrap reveal for color, the slow-pan product-to-result, and the split-screen before/after with synced beat-drop.
+- **On-screen text timing.** Hook text holds for 2–3 seconds, then transitions to a specific-claim slide (service, technique, duration), then to a CTA slide (book / save / follow). Never static text across the whole Reel.
+- **Carousel cover rules (Instagram).** The first slide earns the tap — bold text over a clean image, an "arrow →" or "swipe for" cue, and a strong contrast palette. Slide 2 delivers the promise the cover made. Slide 10 is the CTA slide (don't bury it mid-deck).
+- **Do-not copy.** Overused beauty audio (early-2024 "Love You So" variants, the "Paint" audio, anything tagged as a meme-reversal pattern) reads as dated. Avoid ASMR-extreme sound design unless the brand voice is explicitly indulgent / sensory — it clashes with warm-professional registers.
+
+### Algorithmic-Fit Checklist (Per Platform)
+
+Before publishing, check the post against the platform it's going to:
+
+- **Instagram Feed (photo/carousel)** → cover is the strongest visual; alt text is filled; first 125 characters work as the hook; 15–20 hashtags placed in first comment or after a line break; saves and shares are the target metric.
+- **Instagram Reels** → <90-second runtime (45–60s sweet spot); vertical 9:16; original audio or trending sound; text overlay at 3s mark; 3–5 hashtags woven, not stacked; watch-time to the end is the target metric.
+- **Instagram Stories** → ephemeral, so use for urgency, polls, Q&A, flash promos; stickers (poll, question, link) drive reach; native "add yours" templates boost discovery.
+- **TikTok** → hook in first 2 seconds; 15–60s range; captions auto-generated but refined; native text overlay over baked-in text; 3–4 hashtags including one #FYP-adjacent and one niche; comment reply videos compound reach.
+- **Facebook** → longer captions OK (up to 400 chars); reshares are the target metric; 1–2 hashtags max; community-question prompts drive comments; local groups are a bigger multiplier than the brand page itself.
+- **Pinterest** → 2:3 portrait ratio; keyword-rich title and description (Pinterest is search-driven, not social-driven); link straight to the booking page or a blog post, not to Instagram; evergreen content compounds for 6+ months.
+
+### Carousel vs. Reel Decision Matrix
+
+| Post type | Default format | Why |
+|---|---|---|
+| Before/after | Reel (process video) primary, carousel secondary | Process footage compounds watch-time; the final reveal is the payoff |
+| Educational tip | Carousel (3–5 slides) | Saves are the goal; carousels are saveable; slide-by-slide pacing beats fast-cut video for retention of information |
+| Team spotlight | Reel (30s, staff-led) | Personality-driven content wins on Reels; carousels feel static for human stories |
+| Behind-the-scenes | Reel or Story | Stories if ephemeral/spontaneous; Reel if polished with a narrative arc |
+| Giveaway | Static post + pinned Story reminder | Needs a fixed entry window — static post holds the rules; Story drives urgency |
+| Promo / flash sale | Reel OR Story; avoid carousel | Urgency content doesn't save well; motion + limited time is the pairing |
+| Testimonial | Carousel with screenshot + response | Trust compounds when the viewer sees both the client's words and the team's warm reply |
+| Seasonal | Reel for transformations; Pinterest for inspiration boards | Transformation content rides seasonal hooks on Reels; Pinterest owns long-tail seasonal search |
 
 ### Output Format
 For each caption, provide:
