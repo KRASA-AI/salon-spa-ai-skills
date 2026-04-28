@@ -15,6 +15,7 @@ This repo is a complete AI toolkit for salons & spas. Every skill is a standalon
 |-------|-------------|------------|
 | AI Consent & Compliance Guardrails for Client Communications | Generate the four consent, disclosure, and authorization artifacts that a salon, spa, or med spa needs when AI is drafting, routing, or analyzing client communications: (1) an AI-disclosure clause for intake forms, (2) a HIPAA-compliant marketing authorization separating clinical records from marketing outreach, (3) a before/after photo authorization scoped per platform and revocable, and (4) a short booking-confirmation notice that meets EU AI Act Article 50 transparency for any salon that has EU clients. | ~90 min/policy update |
 | Client Consultation Notes | Produce structured, searchable consultation notes that capture formulas, processing times, tool settings, client preferences, contraindications, and service history in a format any provider can pick up and deliver a consistent service from. | ~8 min/client |
+| Compensation Model Calculator | Help a salon owner, day-spa owner, or independent stylist / therapist / esthetician model the financial outcome of switching between (or running side-by-side) the four canonical compensation structures used in the industry: **commission split**, **hourly + commission**, **booth / chair rental**, and **suite rental**. | ~90 min/decision |
 | Staff Training Guide Builder | Create structured, step-by-step training guides for salon and spa staff covering new techniques, product knowledge, service protocols, safety procedures, and client interaction standards. | ~30 min/guide |
 | Waitlist Gap-Fill Outreach Generator | Turn a last-minute cancellation, no-show, or unbooked stretch into a filled chair by generating short, time-sensitive outreach to the right waitlisted clients. | ~10 min per gap |
 | Weekly KPI Owner Briefing | Turn a raw weekly KPI export from the salon, spa, or med-spa management platform (Zenoti, Mangomint, Boulevard, Meevo, Vagaro, Mindbody, Booksy, Fresha, etc.) into a 1-page owner briefing the user can read in under five minutes Monday morning. | ~45 min/week |
@@ -35,7 +36,7 @@ This repo is a complete AI toolkit for salons & spas. Every skill is a standalon
 | Salon & Spa Email Drafter | Turn rough notes into a polished, salon-or-spa-appropriate email that matches the business's voice, respects the client relationship, and is ready to send. | ~15 min/email |
 | Salon & Spa Meeting Summarizer | Turn raw meeting notes, transcript, or bullet points from a salon, day-spa, or med-spa meeting into a structured summary that a busy owner or lead actually reads — separating decisions from action items from open questions, and surfacing the few metrics that matter for this meeting type. | ~20 min/meeting |
 
-**Total time saved per use: ~526+ minutes across all skills.**
+**Total time saved per use: ~616+ minutes across all skills.**
 
 ## Quick Start
 
