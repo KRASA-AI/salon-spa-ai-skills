@@ -4,7 +4,7 @@ category: _shared
 tools: [claude, chatgpt]
 difficulty: beginner
 time_saved: "~15 min/email"
-version: 2.1
+version: 2.2
 last_eval_score: 8.9
 ---
 
@@ -15,21 +15,26 @@ Turn rough notes into a polished, salon-or-spa-appropriate email that matches th
 
 This is a general-purpose drafter. For specific high-value flows, prefer the specialized skills: `customer-service/booking-confirmation-sequence`, `customer-service/client-winback-sequence`, `customer-service/review-response-writer`, `operations/waitlist-gap-fill-outreach`, and `customer-service/treatment-cadence-rebooking`.
 
+**Cross-skill state inheritance**: When this skill is invoked after `_shared/meeting-summarizer` produces action items, the meeting date, attendees, and assigned action items can be piped directly as input. When invoked after `operations/weekly-kpi-owner-briefing` produces a "What to do this week" recommendation, the relevant action item and owner name can be piped directly. In both cases the skill pre-populates the recipient, tone, and relevant facts from the upstream output — no need to retype them.
+
 ## When to Use
-- A client asks a one-off question that doesn't fit an automated flow (policy clarification, after-care question, product recommendation).
+- A client asks a one-off question that doesn't fit an automated flow (policy clarification, after-care answer, product recommendation).
 - You need a one-time announcement: holiday hours, a stylist departure, a new service menu, a price change, a temporary closure.
 - You're writing a service-recovery email for a complaint that stops short of needing the full review-response-writer playbook.
 - A vendor, landlord, or contractor needs a concise reply and you want the salon's voice maintained.
 - You're drafting an internal email to the team (staff update, training reminder, schedule change).
+- You need to follow up on a meeting action item produced by `_shared/meeting-summarizer` — pipe the action item text as input and the skill pre-fills recipient, tone, and deadline.
+- You need to communicate a KPI-driven recommendation from `operations/weekly-kpi-owner-briefing` to a specific team member — pipe the relevant "What to do this week" bullet as input.
 
 ## Required Input
 - **Archetype** (pick one, or let the skill infer):
-  client follow-up, after-care answer, policy clarification, service-recovery apology, stylist/therapist departure, new-service announcement, price-change notice, holiday/hours update, product recommendation, appointment policy reminder, vendor/landlord reply, internal staff memo
+  client follow-up, post-visit after-care, after-care answer, policy clarification, service-recovery apology, stylist/therapist departure, new-service announcement, price-change notice, holiday/hours update, product recommendation, appointment policy reminder, vendor/landlord reply, internal staff memo, meeting action-item follow-up, kpi-action follow-up
 - **Recipient type**: individual client, segment (e.g., "all color clients"), team member, vendor
 - **Key facts and names**: stylist, service, date, product, any numbers
 - **Tone vector**: default is the tone in `config.yml` → `voice`. Override with one of: warm-conversational, warm-professional, clinical-professional (med spa default), upbeat-modern, concise-transactional
 - **Desired length**: short (≤75 words), medium (75–150), long (150–300). Default: short unless archetype requires more.
 - **CTA**: book, reply, call, no action
+- **Upstream output** (optional): paste the action item from `_shared/meeting-summarizer` or the recommendation from `operations/weekly-kpi-owner-briefing` and the skill will infer archetype, recipient, and key facts automatically.
 
 ## Instructions
 
@@ -82,15 +87,19 @@ Match sign-off to who the email is from:
 | Archetype | Default tone | Key move |
 |---|---|---|
 | Client follow-up | Warm-professional | Name the last service and stylist in the first line |
+| Post-visit after-care | Warm-professional (salon) / Clinical-professional (med spa) | Lead with "how you're feeling" check-in, then the care instructions; never make outcome claims |
 | After-care answer | Clinical-professional (med spa) / Warm-professional (salon) | Lead with reassurance, then the instruction |
 | Policy clarification | Warm-professional, concise | State the policy, then the reason, then the options |
 | Service-recovery apology | Warm-professional, specific | Name the miss, own it, offer a concrete remedy |
-| Stylist/therapist departure | Warm-conversational | Lead with gratitude, offer continuity path |
-| New-service announcement | Upbeat-modern | One-sentence benefit, one-sentence proof, one-sentence CTA |
-| Price-change notice | Warm-professional | Lead with the change + effective date, end with appreciation |
+| Stylist/therapist departure | Warm-conversational | Lead with gratitude, offer continuity path (name the suggested next provider from `staff.roster`) |
+| New-service announcement | Upbeat-modern | One-sentence benefit, one-sentence proof ("clients are already loving"), one-sentence CTA |
+| Price-change notice | Warm-professional | Lead with the change + effective date, one sentence of context, end with appreciation — never apologize for a fair price increase |
 | Holiday/hours update | Concise-transactional | Dates first, CTA second, no fluff |
-| Product recommendation | Warm-professional | Tie to the service the client just received |
+| Product recommendation | Warm-professional | Tie to the service the client just received; name the product from `retail.lines` |
+| Appointment policy reminder | Warm-professional | Reference the policy from `config.yml.pricing.cancellation_policy`; never lecture |
 | Internal staff memo | Concise-transactional | Context, change, ask, deadline |
+| Meeting action-item follow-up | Concise-transactional | Restate the action item verbatim from the meeting summary, owner, and deadline — nothing more |
+| KPI-action follow-up | Warm-professional | Name the KPI reading, name the ask, give the deadline — don't editorialize about why the number is what it is |
 
 ### Design Principles
 
@@ -114,13 +123,13 @@ Return:
 
 If the user's input is missing a critical fact (stylist name, date, the actual policy wording), ask one batched clarifying question listing everything you need, then draft.
 
-## Example Output
+## Example Outputs
+
+### Example 1 — Service-Recovery Apology
 
 **User input:** "Draft an email to Jasmine. Her color appointment ran 45 min over last Saturday because Jen's previous client needed a correction. Jasmine was gracious but I want to send a proper apology. We'd like to offer a complimentary gloss at her next visit."
 
-**Archetype:** Service-recovery apology  
-**Tone:** Warm-professional, specific  
-**Length:** Medium (~130 words)
+**Archetype:** Service-recovery apology | **Tone:** Warm-professional, specific | **Length:** Medium (~130 words)
 
 ---
 
@@ -142,3 +151,86 @@ Front Desk Lead, [Salon Name]
 [opt-out footer per config.yml]
 
 **Notes for sender:** Send from maya@[salon].com. Jen should be cc'd so she can follow up in person at the next visit.
+
+---
+
+### Example 2 — Stylist Departure
+
+**User input:** "Priya is leaving to open her own studio. She's been with us 4 years. I want to let her clients know and make sure they know we have other great colorists. Don't make it sound like a form letter."
+
+**Archetype:** Stylist/therapist departure | **Tone:** Warm-conversational | **Length:** Medium (~140 words)
+
+---
+
+**Subject:** A note about Priya
+
+**Preview:** She's ready for her next chapter — and we wanted you to hear it from us.
+
+Hi [Client First Name],
+
+Priya has decided to open her own studio, and her last day with us is [date]. Four years is a long time to build a relationship, and if you've been in her chair, you know what that looked like.
+
+We're genuinely proud of her, and we didn't want you to hear it from a scheduling message.
+
+If you'd like to stay at [Salon Name], Dana and Chris both work in Priya's specialty — I'd love to introduce you to one of them, or you can browse their work on our Instagram. Just reply here and I'll take care of the rebooking.
+
+Thank you for being part of what made Priya's column what it was.
+
+Maya
+Owner, [Salon Name]
+
+[opt-out footer per config.yml]
+
+**Notes for sender:** Send from owner email. Do not CC Priya — she should communicate her own studio separately if she chooses. Dana and Chris sourced from `config.yml.staff.roster` — confirm availability before sending.
+
+---
+
+### Example 3 — Meeting Action-Item Follow-Up (cross-skill state inheritance)
+
+**User input:** *(Paste from `_shared/meeting-summarizer` output)* "[ ] @Dana — Pull the no-show list from March and flag any three-strikes — due 2026-04-15"
+
+**Archetype:** Meeting action-item follow-up | **Tone:** Concise-transactional | **Length:** Short (~50 words)
+
+---
+
+**Subject:** No-show list — due Tuesday
+
+**Preview:** From Monday's meeting — your action item.
+
+Hi Dana,
+
+Quick note from this week's meeting: pulling the March no-show list and flagging any three-strikes is on your plate by Tuesday the 15th. Let me know if you hit any snags getting the export.
+
+Maya
+
+**Notes for sender:** Transactional — no opt-out footer required. Meeting date auto-sourced from the prior `_shared/meeting-summarizer` output header.
+
+---
+
+### Example 4 — Post-Visit After-Care (med spa)
+
+**User input:** "Send a post-treatment note to Claire after her neuromodulator appointment with Dr. Kaur today. She had her first time with us."
+
+**Archetype:** Post-visit after-care | **Tone:** Clinical-professional | **Length:** Medium (~120 words)
+
+---
+
+**Subject:** After your appointment today — a few things to keep in mind
+
+**Preview:** Quick care reminders from Dr. Kaur's team.
+
+Hi Claire,
+
+Thank you for coming in today. Dr. Kaur's team wanted to send a quick note with a few things to keep in mind over the next 24–48 hours.
+
+Avoid lying flat, strenuous exercise, or direct heat (sauna, steam room) for the rest of today. Don't rub or massage the treated area. Mild redness or a small pinpoint mark at the injection site is normal and should resolve quickly.
+
+Results typically become visible over the next 3–5 days and are fully settled by day 14. If you have any questions before then, reply here or call the front desk.
+
+We'll see you for a follow-up in 3–4 months.
+
+[Medical Director Name], MD — Medical Director, [Clinic Name]
+
+[compliance.regulated_language from config.yml]
+
+**Notes for sender:** Route through `operations/ai-consent-and-compliance-guardrails` Review Checklist before sending. Never state a specific outcome in post-care copy. Source `compliance.regulated_language` from config.yml — if absent, flag before sending.

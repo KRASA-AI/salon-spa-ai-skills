@@ -23,6 +23,7 @@ This repo is a complete AI toolkit for salons & spas. Every skill is a standalon
 | Retail Product Recommender | Generate personalized take-home product recommendations based on the service just performed, the client's hair or skin type, their lifestyle, and their budget comfort level. | ~5 min/client |
 | SMS & WhatsApp Marketing Campaign Builder | Create targeted, concise SMS or WhatsApp marketing messages for salon and spa promotions. | ~20 min/campaign |
 | Salon & Spa Loyalty Program Builder | Design a loyalty program tailored to a salon or spa's specific client base, service mix, and retention goals. | ~45 min/program design |
+| Salon & Spa Membership Program Builder | Design, price, and launch a recurring-revenue membership program for a salon, day spa, or med spa. | ~3 hr/program design |
 | Salon & Spa Referral Program Builder | Design a two-sided referral program that converts existing clients into brand advocates and new-client acquisition channels. | ~30 min/program design |
 | Social Media Caption Writer | Generate platform-optimized, on-brand captions for salon and spa social media posts — including before/after transformations, promotions, educational content, team spotlights, and seasonal campaigns. | ~10 min/post |
 | Social Media Content Calendar & Strategy Planner | Build a complete monthly social media content calendar for a salon or spa — mapping content pillars, post types, platform assignments, cadence, and seasonal hooks into a ready-to-execute schedule. | ~60 min/monthly calendar |

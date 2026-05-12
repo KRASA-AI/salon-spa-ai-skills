@@ -4,7 +4,7 @@ category: _shared
 tools: [claude, chatgpt]
 difficulty: beginner
 time_saved: "~20 min/meeting"
-version: 2.1
+version: 2.2
 last_eval_score: 8.9
 ---
 
@@ -36,13 +36,15 @@ You are a salon/spa operator with experience running the full meeting cadence of
 
 Load business context from `config.yml` (business type, voice, `kpi_watchlist`). If the meeting type is med-spa or medical-director-led, use clinical-professional tone and preserve any language around protocols, adverse events, and scope of practice verbatim.
 
+**Cross-skill state inheritance**: When this skill is run on a Monday after `operations/weekly-kpi-owner-briefing` produced a briefing, the KPI briefing output can be passed as context. The skill will use the "At-a-glance scoreboard" as the Metrics baseline for the weekly meeting, and the "What to do this week" recommendations from the briefing become open action items that the meeting either confirms or modifies. This eliminates the need to re-type KPI readings and proposed actions as meeting notes — just paste the briefing and your meeting's decisions/deviations. Any action item confirmed in the meeting can then be piped into `_shared/email-drafter` for owner-to-team follow-up without re-keying.
+
 ### State Carried From Prior Meeting
 
 Every summary (except the first of a cadence) must open with a short **State Carried** block so consecutive summaries form a running thread rather than isolated snapshots. If the user supplies the prior meeting's summary as input, extract:
 
 - **Last meeting date** and meeting type
 - **Open action items** that had a deadline on or before today and have not been confirmed closed (list with owner and original due date — these graduate to either "done" in the Decisions section or are re-listed under Action Items with an updated deadline)
-- **KPIs under active watch** from `config.yml.kpi_watchlist` plus any that earned a `[REGRESSION]` tag in the prior summary (these must get a reading this meeting or be explicitly deferred)
+- **KPIs under active watch** from `config.yml.kpi_watchlist` plus any that earned a `[REGRESSION]` tag in the prior summary (these must get a reading this meeting or be explicitly deferred). If the `operations/weekly-kpi-owner-briefing` output was passed as context, inherit its "What to watch next week" section directly as the KPI watch list — do not ask the user to re-enter it.
 - **Decisions pending effective-date** (e.g., "72-hour rebook prompt starts Wed" — confirm it actually launched)
 - **Parking-lot items aging >2 meetings** (flag as stale; propose either resolving or closing)
 
@@ -78,15 +80,29 @@ Three consecutive `[REGRESSION]` tags on the same KPI trigger an escalation note
 
 **Daily huddle** → lead with VIPs today + gap list + one retail focus; skip decisions section unless something was actually decided.
 
+For VIP identification: a client is a VIP for today's purposes if they (a) appear in `config.yml.vip_list`, (b) have a service with a `med-spa-*` cadence class booked today (these require confirmed provider prep and pre-treatment review), or (c) have a `bridal` cadence class service booked today. Pull names from the booking for the current day if available; otherwise accept the user's list. Label them "VIP today" in the huddle header with a one-line note on what the team should know before they walk in.
+
 **Weekly service-team** → include a short KPI row: bookings vs. capacity, no-show rate, rebooking rate, retail %. Flag any column (stylist/therapist) that regressed week-over-week.
+
+*2026 industry benchmarks for at-target comparison (use these when the team mentions a metric without comparing it to a standard):*
+
+| KPI | Salon benchmark | Day spa benchmark | Med spa benchmark |
+|---|---|---|---|
+| Bookings vs. capacity | 75–85% | 70–80% | 65–75% |
+| No-show rate | ≤8% | ≤10% | ≤16% |
+| In-chair rebooking rate | ≥60% | ≥55% | ≥50% |
+| Retail attach % | ≥15% | ≥12% | ≥18% |
+| New-client return rate (2nd visit) | ≥45% | ≥40% | ≥50% |
+
+Tag any metric discussed that is below benchmark as `[BELOW BENCHMARK]` (in addition to `[REGRESSION]` if it also regressed from the prior meeting). Benchmarks are overridden by `config.yml.kpi_targets` if present.
 
 **Monthly retail review** → sell-through by SKU, recommendation-to-purchase conversion, top movers, dead stock aged >90 days, vendor rebate status. Any SKUs on watch.
 
-**Vendor education** → structured takeaways: "products covered", "new protocols learned", "pairings for existing services", "compliance notes" (especially for med-spa). End with "what we are adopting and who owns rollout."
+**Vendor education** → structured takeaways: "products covered", "new protocols learned", "pairings for existing services", "compliance notes" (especially for med-spa). End with "what we are adopting and who owns rollout." Add a `[→ staff-training-guide]` tag on any protocol takeaway that the team should convert into a trainee guide — this routes the action item to `operations/staff-training-guide` for write-up.
 
 **1:1** → column performance, column health (pre-book % and repeat %), retail mix, one strength, one development area, one specific commitment next cycle.
 
-**Quarterly goals review** → goal-by-goal status (on track / behind / missed / exceeded), root cause for any behind/missed, revised commitment for next quarter.
+**Quarterly goals review** → goal-by-goal status (on track / behind / missed / exceeded), root cause for any behind/missed, revised commitment for next quarter. Pull current targets from `config.yml.kpi_targets` for comparison.
 
 **Medical-director / compliance** → protocol changes with effective date, adverse-event log review (count + any escalations), training / CE needs, any state-regulation updates. Keep clinical language verbatim.
 
