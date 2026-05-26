@@ -4,7 +4,7 @@ category: operations
 tools: [claude, chatgpt]
 difficulty: intermediate
 time_saved: "~2 hr/policy refresh"
-version: 1.0
+version: 1.1
 last_eval_score: null
 ---
 
@@ -50,6 +50,23 @@ Load business context from `config.yml`. Specifically reference:
 - `config.yml.staff.roster` — never name a stylist or provider in the policy; the policy is salon-wide. Roster is referenced only for the front-desk talking-point card (extended output only).
 
 Reference `knowledge-base/regulations/` for state-by-state refund-grace-window rules and the med-spa medical-director-on-file requirement. Reference `knowledge-base/best-practices/` for typical deposit-by-service-tier conventions and the 2026 industry benchmarks.
+
+### Config Integration — What To Pull From `config.yml`
+
+| Config key | Used for | Fallback if missing |
+|---|---|---|
+| `business.name` | Canonical policy header ("Salon X cancellation, no-show, and deposit policy"), intake-acknowledgment line, SMS Touch 1 attribution | "the salon" — flag in the rationale block that the name placeholder must be filled before publishing |
+| `business.business_type` | Selects the correct column of the 2026 Industry Reference Fallback table (salon / day spa / med spa), gates the med-spa compliance footer (medical-director sign-off, adverse-event escalation, state-board flag), and gates the HIPAA-aware language rule on the SMS one-liners | flag for user; if any `med-spa-*` cadence class exists in `services.cadence_class`, treat as hybrid and render the med-spa footer for those tiers only |
+| `business.location.state` | Drives the state-specific refund-grace-window line (3-day default; CA 7-day for health-related categories per B&P § 8599) and the regulatory flag block (CO HB 1024 prominent-display, IN SB 282 2027-01-01 deadline, FL SB 1728 pharmacy-license, NJ February 2026 joint-rule injectable oversight, MA May 2025 cosmetology / med-spa scope clarification, IA HSB 591 60-mile / 4-hr supervision rule, CA AB-890 NP-ownership) | use the 3-day default refund-grace-window and flag the missing state explicitly in the Things to Verify list — never silently apply a fallback state |
+| `business.cancellation_policy` and `pricing.cancellation_policy` | The canonical fields the policy populates: `notice_window_hours`, `late_cancel_fee_pct`, `no_show_fee_pct`, `deposit_schedule` (per `services.cadence_class`), `late_arrival_grace_min`, `client_facing_text`. The skill writes the new policy back to these fields and the 14 downstream skills inherit it | add the block if missing; offer to save the run's output back to config after the user confirms; until saved, mark the policy "draft — not yet canonical in config.yml" in the rationale block |
+| `services.cadence_class` | Drives the service-tier-aware deposit schedule — every active class gets its own deposit row; chair-time-heavy / consumables-heavy / clinical classes (`color-cadence`, `bridal`, `lash-extensions`, `med-spa-*`) carry stronger deposits than walk-in classes (`cut-only`, `blow-dry-bar`, `barber`); membership tiers route to the carve-out paragraph | infer from `services.menu` text matching; if no signal, write a single-tier policy and flag in Things to Verify that per-tier strictness was not applied |
+| `services.menu` | Provides the actual service names and ticket prices that anchor the deposit-dollar examples in the deposit schedule table (e.g., "$45 (25% of $180 balayage)" rather than a percentage alone) | show percentage-only deposit values and flag in Things to Verify that the dollar example was not anchored to live service prices |
+| `tools` | Names the booking platform and constrains the deposit-collection language to what the platform actually supports — Boulevard, Mindbody, Zenoti, Meevo, Mangomint, GlossGenius Pro, Vagaro all support deposit-on-booking + card-on-file with auto-charge; older Booker / Salon Iris configurations may be hold-card-only | write the hold-card-only version and add a "next step when the platform supports it" paragraph for the deposit-on-booking version — never assert a deposit charge the platform cannot execute |
+| `compliance.regulations` (med spa only) | Drives the medical-director attribution ("Reviewed by [name and credential]" footer), the adverse-event-escalation-within-24-hour clinical follow-up rule, and the state-board signage language | omit the med-spa footer; if any `med-spa-*` cadence class exists but `compliance.regulations` is empty, surface a hard flag in the Things to Verify list — do not publish without the medical-director name |
+| `compliance.medical_director` (med spa only) | Pulls the medical director's name and credential into the med-spa compliance footer; pulls the practice's NPI for the adverse-event-escalation-call documentation reference | use a `[MEDICAL DIRECTOR NAME, CREDENTIAL]` placeholder and add a hard flag in Things to Verify — the policy must not be published with the placeholder still in place |
+| `staff.roster` | Never name a stylist or provider in the canonical policy text — the policy is salon-wide and provider-neutral. The roster is consulted only when the extended output's front-desk talking-point card needs to attribute the policy delivery to a named front-desk lead | omit the front-desk talking-point card from the extended output and add a flag noting the roster gap |
+
+If a required config key is missing, write the draft policy anyway and surface the gap in the Things to Verify list and in the rationale block — never silently substitute a fallback as if it were the practice's confirmed input. The policy must be transparent about which lines came from live config and which came from the 2026 industry-reference fallback table.
 
 ### 2026 Industry Reference Fallbacks
 

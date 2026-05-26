@@ -4,7 +4,7 @@ category: sales
 tools: [claude, chatgpt]
 difficulty: intermediate
 time_saved: "~3 hr/program design"
-version: 1.0
+version: 1.1
 last_eval_score: null
 ---
 
@@ -55,6 +55,23 @@ Load business context from `config.yml`. Specifically reference:
 - `config.yml.business.location.state` — drives refund-grace-window language (California 7-day right-of-rescission for certain subscriptions; New York consumer-protection cancellation rules; Colorado HB 1024 prominent-display for med-spa memberships; Indiana 2027 med-spa registration flag).
 - `config.yml.tools` — names the booking platform and constrains the billing language.
 - `config.yml.loyalty_program` — if a loyalty program exists, the membership tier design must either integrate with or explicitly sit alongside it (never create a hidden conflict where a member earns loyalty points on services they've already pre-paid at a discount — resolve the earn-on-membership question explicitly).
+
+### Config Integration — What To Pull From `config.yml`
+
+| Config key | Used for | Fallback if missing |
+|---|---|---|
+| `business.name` | Program-summary header attribution, the enrollment SMS sign-off, and the tier-blueprint table caption | "the practice" — flag in the rationale block that the name placeholder must be filled before launch |
+| `business.business_type` | Selects the correct column of the 2026 Industry Reference Benchmark table (salon / day spa / med spa) — drives default monthly price band, expected MRR contribution, member visit-frequency uplift, and typical churn band; gates the med-spa compliance hook (no-clinical-outcome language, HIPAA-aware enrollment copy, state refund-grace flag, DEA telehealth December 2026 note) | if any `med-spa-*` cadence class exists in `services.cadence_class`, render the med-spa compliance hook for those tiers only; otherwise flag and apply the salon defaults |
+| `business.location.state` | Drives the refund-grace-window language (3-day federal default; CA 7-day for health-related categories per B&P § 8599; NY consumer-protection enrollment-disclosure rules), the CO HB 1024 prominent-display rule for med-spa memberships, the IN SB 282 2027-01-01 registration flag, the FL SB 1728 pharmacy-license note, and the NJ February 2026 joint-rule injectable-oversight requirement | use the 3-day default and flag the missing state explicitly in the Compliance Checklist — never silently default |
+| `services.cadence_class` | Determines what services belong in which tier (an `injectable-cadence` class cannot be bundled into a non-clinical tier; `color-cadence` belongs in mid- or top-tier given the chair-time; `massage-60` and `facial-custom` are typical entry-tier anchors) and drives the cost-of-delivery baseline for the margin-first rule | infer from `services.menu` text matching; if no signal, write a two-tier program and flag the gap in the rationale |
+| `services.menu` and `pricing` | Anchors the retail value column in the tier blueprint (the 70–80% retail-value rule is applied against live service prices, not a generic figure); drives the breakeven model's visit-frequency math; provides the actual service names that appear in the in-chair pitch script | use the 2026 industry-reference monthly price band and mark every tier "industry reference, not your numbers" — flag the gap and recommend running the skill again once `pricing` is populated |
+| `pricing.average_ticket` and `pricing.visit_frequency` | Anchors the MRR forecast table baseline (50-member start is a default — if the practice has visit-frequency data, the forecast can run from the practice's actual top-quintile-by-visit-frequency client count as the realistic first-month enrollment target) | use the 50-member default and flag that the enrollment target is a generic starting point |
+| `tools` | Names the booking / billing platform and constrains the recurring-billing language to what the platform actually supports (Mindbody, Zenoti, Meevo, Boulevard, GlossGenius Pro, Vagaro all support recurring billing + auto-renewal; older configurations may need a billing-add-on); pulls the platform's billing-day-default for the launch plan | recommend a billing-add-on and add the platform-billing-test-run row to the Review Before Publishing checklist with a hard flag |
+| `loyalty_program` | If populated, the Loyalty Integration Rule resolves the earn-on-membership question explicitly (default: no points earn on membership-included services, full earn on retail and out-of-tier services); pulls the loyalty program's point value to make the recommendation concrete | render a "no conflict: loyalty program not detected in config" note and skip the integration paragraph |
+| `brand_voice` (or `voice.tone`) | Drives tier-naming conventions (warm-indulgent: Renew / Restore / Radiance; clinical-precise: Wellness Essentials / Signature / Platinum; boutique-elevated: The Pass / The Membership / The Circle; accessible-friendly: Studio Pass / Stylist's Circle / Signature Chair); shapes the enrollment copy tone | use the warm-indulgent default and surface the assumption inline |
+| `compliance.regulations` (med spa only) | Drives the no-clinical-outcome language audit on tier descriptions, the HIPAA-aware enrollment copy check (no service names by clinical category in external SMS), the DEA telehealth December 2026 transition flag for any GLP-1 / HRT membership tier, and the medical-director sign-off line | omit the med-spa-specific Compliance Checklist; if any `med-spa-*` cadence class exists but `compliance.regulations` is empty, surface a hard flag — do not launch a med-spa membership without medical-director sign-off |
+
+If a required config key is missing, produce the program blueprint anyway and surface the gap in the Compliance Checklist (extended output) or in the rationale block (standard output) — never silently substitute a fallback as if it were the practice's confirmed input. The program's value depends on transparent assumptions; the launch will fail if the practice publishes pricing or tier inclusions that the team cannot actually deliver.
 
 ### 2026 Industry Reference Benchmarks
 

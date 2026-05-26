@@ -4,7 +4,7 @@ category: operations
 tools: [claude, chatgpt]
 difficulty: intermediate
 time_saved: "~90 min/decision"
-version: 1.0
+version: 1.1
 last_eval_score: null
 ---
 
@@ -52,6 +52,23 @@ Load business context from `config.yml`. Specifically reference:
 - `config.yml.tools` — names the booking platform whose processing fees apply.
 
 Reference `knowledge-base/regulations/` for the 1099 vs. W-2 misclassification standard (relevant to the federal common-law test plus the 17 states with stricter ABC tests). Reference `knowledge-base/best-practices/` for typical retail-commission and tip-processing conventions.
+
+### Config Integration — What To Pull From `config.yml`
+
+| Config key | Used for | Fallback if missing |
+|---|---|---|
+| `business.name` | Decision-recap header ("at Salon X") and the recommendation paragraph attribution | "the salon" |
+| `business.business_type` | Selects the correct column of the 2026 Industry Reference Fallback table (salon / day spa / med spa) and gates the SSTB-flag note in the Things to Verify list | flag for user; do not silently default to "salon" if the business has med-spa cadence classes — surface the gap |
+| `business.location.state` | Drives the state income tax estimate (effective rate by state), the ABC-test misclassification flag (17 ABC-test states: CA, MA, NJ, IL, NY, NV, NH, CT, IN, AK, AR, LA, ME, NE, OR, VT, WV), and any state-board separation requirement (e.g., Texas chair-separation rule) in the Things to Verify list | use national 5% effective state-tax fallback and flag the missing state explicitly — do not skip the ABC-test check |
+| `compensation_models` | Pre-populates the current-model details (commission split by tier, retail commission %, hourly base, booth or suite rent, back-bar pass-through rule, tip-processing rule); offer to save the run's inputs back to this block after the analysis | use the 2026 Industry Reference Fallback table for the matching business_type column and mark every fallback row "industry reference, not your numbers" in the output |
+| `services.cadence_class` | Drives the revenue-mix weight: appointment-heavy classes (`color-cadence`, `lash-extensions`, `bridal`, `med-spa-*`) tilt the breakeven toward booth rent at lower revenue; walk-in-heavy classes (`cut-only`, `blow-dry-bar`, `barber`) tilt toward commission; med-spa cadence classes raise the back-bar/supply % to the 12–18% band | infer from `services.menu` text matching; if no signal, use mixed default and flag |
+| `services.menu` | Provides the actual service ticket sizes that anchor the three revenue scenarios when only a single revenue figure is given (low / mid / stretch at ±25%) | fall back to the $60k / $100k / $160k default and mark the scenarios "industry reference" |
+| `staff.roster` | For stylist-specific runs, only name a stylist who is on the roster; pulls tenure (drives junior vs. senior vs. master split band) and tip-processing-through-POS flag if recorded | refer to "the stylist" generically; flag the missing tenure as a sensitivity input |
+| `pricing.tip_processing` | Drives whether tips run through the salon POS (FICA base; the W-2 commission stylist gets it as wages) or are collected directly by the stylist — changes the owner-side payroll-tax line and the stylist-side net by 7.65% of tipped revenue | assume salon-POS processing (the more common default for W-2 commission shops) and flag the assumption in Things to Verify |
+| `tools` | Names the booking / payment platform and applies its actual processing fee % (Boulevard, Mangomint, Zenoti, GlossGenius Pro, Vagaro, Mindbody all sit at 2.9–3.5% + per-transaction); applied to the processing-fee row | use the 3.5% mid-range default and mark the row "industry reference" |
+| `compliance.regulations` (med spa only) | Drives the SSTB-line flag for med-spa entities with NP/PA medical-director structures (salons / spas / med spas are by default not SSTBs for QBI, but med-spa structures with an NP/PA medical-director may straddle the line); also surfaces any state-board signage rule for booth rental in the Things to Verify list (CO HB 1024, IN SB 282, NJ February 2026 joint rule, MA cosmetology / med-spa scope) | omit the med-spa SSTB flag; for non-med-spa businesses this is the correct default |
+
+If a required config key is missing, produce the calculator anyway and surface the gap in the Things to Verify list — never silently substitute a fallback as if it were the salon's actual number. The skill's value is in transparent assumptions, not invented precision.
 
 ### 2026 Industry Reference Fallbacks
 
