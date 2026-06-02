@@ -1,6 +1,6 @@
 # State-by-State Med Spa Regulation Reference — 2026
 
-*Last updated: 2026-05-11. Compiled from landscape monitor runs 2026-04-12 through 2026-05-11. This is a curation reference for use by skills in this repo — not legal advice. Route to the practice's medical director and healthcare attorney for citation-level review and real-time status.*
+*Last updated: 2026-06-01. Compiled from landscape monitor runs 2026-04-12 through 2026-06-01. This is a curation reference for use by skills in this repo — not legal advice. Route to the practice's medical director and healthcare attorney for citation-level review and real-time status.*
 
 ---
 
@@ -44,14 +44,19 @@ Skills should cite entries by state name and rule category only — never quote 
 
 ### California
 - **AB-890 (effective 2026)**: Nurse practitioners with six or more years of experience, or who hold a Doctor of Nursing Practice (DNP) degree, may own and operate a med spa without physician supervision. Significant change in a state that has historically been strict on Corporate Practice of Medicine (CPOM).
+- **AB-489 — Health care professions: deceptive terms or letters: artificial intelligence (effective January 1, 2026)**: Prohibits AI systems (including generative AI used for marketing or client-facing communication) from using terms, post-nominal letters, phrases, or design elements that indicate or imply the speaker is, or has the qualifications of, a licensed health care professional, unless the content is genuinely supervised by an in-state licensee. Captures marketing language like "doctor-level," "clinician-guided," "expert-backed," "MD-formulated," and similar when used by an AI system without genuine licensed-pro involvement. Enforcement: the applicable health-care professional licensing board may seek injunctive or other authorized remedies, and each use of a restricted term is a separate violation.
+  - **Practice impact for salons / med spas in CA**: any AI-drafted marketing email, SMS, website copy, social caption, or chatbot reply that touches a clinical service (injectables, lasers, dermaplaning, IPL, microneedling, IV hydration, medical-grade skincare claims) must be reviewed for license-implication terms before send. Front-desk AI receptionist scripts and chatbot fallbacks need an explicit "no clinical advice" stop rule. The skill `operations/ai-consent-and-compliance-guardrails` should treat AB-489 as a hard gate for the CA marketing-copy and chatbot-script artifacts; the skill `customer-service/review-response-writer` must avoid drafting "clinician-approved" / "doctor-recommended" replies on CA-state med-spa accounts unless the medical director has signed off.
 - **Membership refund-grace window**: California Business & Professions Code §8599 and related provisions — health club and certain wellness service contracts require a **3–7 day right of rescission** depending on the contract type. Route to attorney for the exact applicable section for med spa memberships.
 - **CPOM rule**: Physicians and now NPs (post-AB-890) may own the medical entity. Non-physician ownership structures require careful MSO/PC setup.
-- **Skill hook**: `sales/membership-program-builder` (California refund-grace block); `cancellation-no-show-policy-author` (CA refund-grace for pre-paid series); `ai-consent-and-compliance-guardrails` (ownership structure compliance note).
+- **Skill hook**: `sales/membership-program-builder` (California refund-grace block); `cancellation-no-show-policy-author` (CA refund-grace for pre-paid series); `ai-consent-and-compliance-guardrails` (ownership structure compliance note **plus the AB-489 license-term hard gate**); `customer-service/review-response-writer` (AB-489 clinical-language guard); `sales/social-caption-writer` and `sales/sms-campaign-builder` (AB-489 restricted-term checklist for CA-state clinical-tier services).
 
 ### Colorado
 - **HB 1024** (effective **August 5, 2025**): Med spas must prominently display their cancellation, refund, and membership terms in the digital booking flow and at the physical treatment location.
-- **SB 130** (introduced February 2026, still in committee as of May 2026): Expanding medical-aesthetic ownership rules. Not yet enacted — watch for committee progress.
-- **Skill hook**: `cancellation-no-show-policy-author` (CO prominent-display flag); `membership-program-builder` (CO compliance checklist item); `ai-consent-and-compliance-guardrails` (CO display rule for AI-generated notices).
+- **SB 26-189 — Colorado AI Act replacement (signed May 14, 2026; effective January 1, 2027)**: Repeals and replaces the 2024 Colorado AI Act (SB 24-205, which had been scheduled to take effect June 30, 2026). Reorients the framework around developers and deployers of "Covered Automated Decision-Making Technology" used to materially influence a consequential decision in covered domains (health care services among them). Imposes documentation, developer-notification-of-material-update, and deployer-risk-management duties; backs off some of the broader 2024-Act obligations. **HIPAA-covered entities and their business associates are largely exempt** from the new law's main duties outside of consequential-employment and financial-assistance decisions. FDA-regulated medical devices and pharmaceutical R&D are excluded from coverage entirely.
+  - **Practice impact for CO med spas**: cash-pay aesthetic practices that are *not* HIPAA-covered (e.g., some pure cosmetic-only spas with no medical record-keeping) lose the broad HIPAA carve-out and may have deployer duties for any AI tool that materially influences a "consequential decision" — for med spas, the most likely capture is AI-driven hiring tools and AI-driven financing-eligibility tools, not AI-drafted marketing copy. Skills should not assume CO med spas are automatically exempt; the exempt status depends on whether the practice is HIPAA-covered.
+  - **Status note**: this is a separate framework from HB 1024 (which is a consumer-disclosure rule for med-spa cancellation terms). The two coexist.
+- **SB 130** (introduced February 2026, still in committee as of May 2026, unchanged at June 2026 monitor cycle): Expanding medical-aesthetic ownership rules. Not yet enacted — watch for committee progress.
+- **Skill hook**: `cancellation-no-show-policy-author` (CO prominent-display flag, HB 1024); `membership-program-builder` (CO compliance checklist item); `ai-consent-and-compliance-guardrails` (CO display rule for AI-generated notices **plus the SB 26-189 HIPAA-covered-vs-not gate for AI hiring and financing tools, effective January 1, 2027**); future `operations/stylist-hiring-rubric` (CO AI-hiring-tool deployer duties if the rubric is automated).
 
 ### Florida
 - **SB 1728 / HB 1429 — "The Medical Spa Prescription Drug Oversight Act"** (introduced January 2026, **effective July 1, 2026 if passed**):
@@ -109,10 +114,13 @@ Skills should cite entries by state name and rule category only — never quote 
 | Skill | What it reads from here |
 |---|---|
 | `operations/cancellation-no-show-policy-author` | State refund-grace windows; med-spa compliance footer state flags (CO, FL, IN, NJ, MA, IA) |
-| `operations/ai-consent-and-compliance-guardrails` | EU AI Act Article 50; state-level HIPAA enforcement; ownership rules; NY / OH / TX / IA hard gates; Washington watch item |
+| `operations/ai-consent-and-compliance-guardrails` | EU AI Act Article 50; state-level HIPAA enforcement; ownership rules; NY / OH / TX / IA hard gates; Washington watch item; **CA AB-489 license-term hard gate; CO SB 26-189 HIPAA-covered-vs-not gate for AI hiring / financing tools** |
 | `sales/membership-program-builder` | State refund-grace windows (CA, CO, IN); FL registration deadline; DEA telehealth expiry; med-spa compliance checklist entries |
 | `operations/staff-training-guide` | Scope-of-practice gate (MA, NY, OH); physician-protocol requirements (OH, TX); IA supervision hours |
+| `operations/stylist-hiring-rubric` (new this cycle) | **CO SB 26-189 deployer-duty gate for AI-driven hiring tools** (effective 2027-01-01); CA AB-489 license-term check for any clinical-tier role description in CA practices |
+| `customer-service/review-response-writer` | **CA AB-489 clinical-language guard** for med-spa accounts |
+| `sales/social-caption-writer`, `sales/sms-campaign-builder` | **CA AB-489 restricted-term checklist** for CA-state clinical-tier services |
 
 ---
 
-*Refresh cadence: updated at each landscape monitor cycle when new state-level regulatory developments surface. Next scheduled check: June 2026 monitor cycle (EU AI Act Code of Practice finalization + CO SB 130 committee status + WA rule review update).*
+*Refresh cadence: updated at each landscape monitor cycle when new state-level regulatory developments surface. Next scheduled check: July 2026 monitor cycle (EU AI Act Article 50 applicability date 2026-08-02 — final Code of Practice review; CO SB 130 committee status; WA rule review update; FL SB 1728 enactment status post-2026-07-01 effective date).*

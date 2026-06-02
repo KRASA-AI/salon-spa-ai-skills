@@ -20,6 +20,7 @@ This repo is a complete AI toolkit for salons & spas. Every skill is a standalon
 | Morning Owner Brief | Produce a one-page morning brief for the salon, spa, or med spa owner — what happened yesterday, what's on the schedule today, where the risks are, and the single most important thing to fix before noon. | ~30 min/day |
 | No-Show Risk Reminder | Draft a personalized confirmation + reminder sequence for an upcoming appointment based on **how likely that specific client is to no-show**. | ~20 min/day |
 | Staff Training Guide Builder | Create structured, step-by-step training guides for salon and spa staff covering new techniques, product knowledge, service protocols, safety procedures, and client interaction standards. | ~30 min/guide |
+| Stylist & Provider Hiring Rubric Builder | Generate a structured, role-specific hiring rubric and interview kit for a salon, day spa, or med spa — covering screening criteria, the technical assessment (working interview or take-home), the behavioral interview question bank, the scorecard, and the hire/no-hire decision frame. | ~45 min/role + downstream rehire-cost avoidance |
 | Waitlist Gap-Fill Outreach Generator | Turn a last-minute cancellation, no-show, or unbooked stretch into a filled chair by generating short, time-sensitive outreach to the right waitlisted clients. | ~10 min per gap |
 | Weekly KPI Owner Briefing | Turn a raw weekly KPI export from the salon, spa, or med-spa management platform (Zenoti, Mangomint, Boulevard, Meevo, Vagaro, Mindbody, Booksy, Fresha, etc.) into a 1-page owner briefing the user can read in under five minutes Monday morning. | ~45 min/week |
 | Retail Product Recommender | Generate personalized take-home product recommendations based on the service just performed, the client's hair or skin type, their lifestyle, and their budget comfort level. | ~5 min/client |
@@ -41,7 +42,7 @@ This repo is a complete AI toolkit for salons & spas. Every skill is a standalon
 | Salon & Spa Email Drafter | Turn rough notes into a polished, salon-or-spa-appropriate email that matches the business's voice, respects the client relationship, and is ready to send. | ~15 min/email |
 | Salon & Spa Meeting Summarizer | Turn raw meeting notes, transcript, or bullet points from a salon, day-spa, or med-spa meeting into a structured summary that a busy owner or lead actually reads — separating decisions from action items from open questions, and surfacing the few metrics that matter for this meeting type. | ~20 min/meeting |
 
-**Total time saved per use: ~681+ minutes across all skills.**
+**Total time saved per use: ~726+ minutes across all skills.**
 
 ## Quick Start
 
