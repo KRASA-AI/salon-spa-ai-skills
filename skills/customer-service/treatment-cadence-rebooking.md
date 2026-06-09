@@ -4,8 +4,8 @@ category: customer-service
 tools: [claude, chatgpt]
 difficulty: intermediate
 time_saved: "~20 min/cadence campaign"
-version: 1.0
-last_eval_score: null
+version: 1.1
+last_eval_score: 9.3
 ---
 
 # Med Spa Treatment-Cadence Rebooking Reminders
@@ -14,6 +14,8 @@ last_eval_score: null
 Generate treatment-specific rebooking reminders timed to the clinical cadence of each aesthetic service — Botox at 10–14 weeks, filler at 6–12 months, chemical peel series at 3–6 weeks, laser hair removal at 4–6 weeks, HydraFacial at 4 weeks, CoolSculpting follow-up at 8–12 weeks. Each message ties the timing to the clinical "why" (results fading, series consolidation, seasonal window) and is attributed to the treating provider rather than the clinic, a pattern shown to lift conversion materially over generic clinic-voice outreach.
 
 This skill is distinct from the general `client-winback-sequence` (lapsed client re-engagement) and the `booking-confirmation-sequence` (pre-visit confirmations). It sits in the middle: the client is neither lapsed nor booked — they are in their optimal retreatment window and need a clinically credible nudge.
+
+**Handoff to win-back on a completed-without-rebooking cycle.** If this skill's three-touch cadence sequence finishes and the client has not rebooked, do **not** drop them into a generic lapse pool. Hand them off to `customer-service/client-winback-sequence` at its **60-day soft tier** carrying a `cadence-skip` state flag plus the cadence class, the optimal-window date, and the treating provider. That skill reads the flag and leads with the cadence-class "why" (continuity of an established rhythm) instead of generic "we miss you" copy, with no offer on the first touch. A single missed cadence window is a *skip*, not a lapse — only a missed window plus a missed soft-tier winback converts the client to a true lapse. See `customer-service/client-winback-sequence` → "Cadence-Class Skip vs. Hard Lapse."
 
 ## When to Use
 - A client's last injectable, laser, energy-based, or skincare treatment is approaching its optimal retreatment date.

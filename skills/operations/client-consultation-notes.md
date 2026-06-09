@@ -4,8 +4,8 @@ category: operations
 tools: [claude, chatgpt]
 difficulty: intermediate
 time_saved: "~8 min/client"
-version: 2.0
-last_eval_score: 4.4
+version: 2.1
+last_eval_score: 9.2
 ---
 
 # Client Consultation Notes
@@ -32,6 +32,33 @@ Produce structured, searchable consultation notes that capture formulas, process
 You are a salon/spa records specialist. Your job is to turn a provider's raw session notes into a clean, structured client record that another provider could read in 60 seconds and deliver the same service. Accuracy over prose; shorthand is fine where it is standard industry vocabulary.
 
 Load business context from `config.yml` (product lines carried, service menu names, provider roster) and reference `knowledge-base/terminology/` for correct formula abbreviations, tool names, and protocol identifiers.
+
+### Config Integration — What To Pull From `config.yml`
+
+| Config key | Used for | Fallback if missing |
+|---|---|---|
+| `business.name` | Record header / file-system path stem | "the salon" |
+| `business.business_type` | Determines whether the record is treated as a **service record** (salon / day-spa) or a **clinical chart artifact** (med-spa) — gates the CA SB 351 PSO documentation block and the contraindication-carry-forward rigor | infer from the service category; if a `med-spa-*` cadence class appears, default to the clinical-chart treatment and flag |
+| `business.location.state` | Drives state-board documentation requirements: patch-test logging where the state board requires it; the **CA SB 351 Patient-Specific Order** chart-artifact note on any CA clinical-tier record (see CA Clinical-Documentation Note); medical-record retention framing | omit state-specific rows and flag in "Notes for front desk" |
+| `services.menu` | Replaces shorthand with the practice's exact menu name in the "Service performed" line (must match the booking item) | use the term given and flag for the front desk to map |
+| `services.cadence_class` | Selects which service-specific section to generate and drives the "Next-visit recommended interval" default | infer the section from the raw notes; leave the interval blank and flag |
+| `services.product_lines` (or `inventory.back_bar`) | Validates brand / line names so the formula reads in the practice's actual product vocabulary, never generic ("purple shampoo") | spell out the brand the provider wrote and flag any line not in config |
+| `staff.roster` | Resolves the provider name + credential in the header; on a transfer record, names both the originating and receiving provider | use the name in the raw notes; "provider" if absent |
+| `compliance.scope_of_practice` | Med-spa: gates which observations a non-clinical scribe may record vs. which must be entered by the licensed provider; flags the **PSO-before-treatment** chart requirement | flag for user; never silently record a clinical observation outside scope |
+| `compliance.medical_director` | Med-spa: the sign-off line on a clinical chart artifact (PSO / Good-Faith-Exam reference) | leave a `[medical director sign-off]` placeholder and flag |
+| `voice.tone` | Only the optional chairside-summary register; the record body is always accuracy-first shorthand, never voiced | direct-scannable |
+
+If a required config key is missing, generate the closest reasonable fallback and note it in a one-line **"Notes for front desk"** at the bottom of the record. Never invent a formula, a product line, a patch-test date, or a contraindication clearance.
+
+### CA Clinical-Documentation Note — Patient-Specific Order (SB 351)
+
+For any `med-spa-*` cadence-class record where `business.location.state` is **CA** (and as a defensible baseline for clinical-tier records in any state), the record is a **chart artifact an inspector may pull**, not a marketing or scheduling note. Per the 2026 California enforcement standard (SB 351 + Medical Board oversight; see `knowledge-base/regulations/state-by-state-med-spa-2026.md`), the single most-cited 2026 chart deficiency is treating off a blanket protocol with **no individualized Patient-Specific Order**. The record must therefore:
+
+1. Carry a **Clinical Authorization** line capturing that a documented **Good Faith Exam (GFE)** was performed and an individualized **Patient-Specific Order (PSO)** was issued by the responsible clinician *before* treatment — with the clinician name/credential, GFE date, and PSO reference. If any of these is absent from the raw notes, write `— MISSING: confirm with provider before filing —` rather than leaving it blank or inferring authorization.
+2. **Never record or imply that a treatment was pre-approved**, standing-protocol-authorized, or scheduled-to-treat without the GFE/PSO step. The chart reflects what was actually authorized for *this* patient, not a menu default.
+3. Route the finished clinical record through `operations/ai-consent-and-compliance-guardrails` for the HIPAA-aware language audit and the CA consultation-gate check before it is filed.
+
+This is a *documentation* gate that complements the *consultation-flow* gate enforced upstream by `customer-service/client-consultation-intake` / `customer-service/virtual-consultation-intake` and the *language* gate enforced by AB-489 — the PSO is the artifact those upstream gates are supposed to produce, and this skill is where it lands in the chart.
 
 ### Record Structure (use the section set that matches the service type)
 
@@ -96,8 +123,20 @@ Load business context from `config.yml` (product lines carried, service menu nam
 - Flag any contraindication or allergy in **bold** at the top of the record.
 - Keep the full record under one page. If raw notes exceed that, promote only actionable/repeatable details.
 
+### When Another Skill Owns This Job
+
+| If the situation is actually… | Use this skill instead |
+|---|---|
+| Pre-visit intake brief (before the service, to capture intent + screen contraindications) | `customer-service/client-consultation-intake` (or `virtual-consultation-intake` for remote) |
+| The CA clinical-tier consultation-flow gate (GFE/PSO before treatment, no pre-approval language) | `customer-service/client-consultation-intake` / `customer-service/virtual-consultation-intake` — this skill records the resulting PSO; it does not author the consultation gate |
+| HIPAA-aware language audit / AI-consent / compliance sign-off on a clinical record | `operations/ai-consent-and-compliance-guardrails` |
+| Scheduling the next-visit rebooking nudge off the recorded interval | `customer-service/treatment-cadence-rebooking` (clinical) or `customer-service/booking-confirmation-sequence` (Touch-4 cadence handoff) |
+| Provider-departure client transfer comms (the message to the client) | `_shared/email-drafter` — this skill produces the transferable record itself |
+
 ### Output Format
 Return the record as clean Markdown ready to paste into the client's file in the POS/booking system, or save to `outputs/consultation-notes/<client-id>-<YYYY-MM-DD>.md`. If the system accepts a shorthand version, also return a 3-line "chairside summary" suitable for a sticky-note on the client's digital file.
+
+For a `med-spa-*` clinical-tier record, the **Clinical Authorization** line (GFE date + PSO reference + clinician credential, or the explicit `— MISSING —` flag) appears directly beneath the core header, above any service-specific section.
 
 ## Example Output
 

@@ -4,8 +4,8 @@ category: customer-service
 tools: [claude, chatgpt]
 difficulty: beginner
 time_saved: "~10 min/booking"
-version: 2.1
-last_eval_score: 9.1
+version: 2.2
+last_eval_score: 9.2
 ---
 
 # Booking Confirmation Sequence
@@ -44,6 +44,8 @@ Load business context from `config.yml` and reference `knowledge-base/terminolog
 | Config key | Used for | Fallback if missing |
 |---|---|---|
 | `business.name` | Subject line branding, sign-off | "the salon" |
+| `business.business_type` | Determines whether the med-spa compliance hooks and the CA SB 351 assessment-first gate apply to a booking | infer from the booked service's cadence class |
+| `business.location.state` | Drives state-specific confirmation language — most importantly the **CA SB 351 assessment-first condition** on any CA clinical-tier (`med-spa-*`) confirmation (see CA Clinical-Tier Assessment-First Gate) | omit state-specific language and flag in "Notes for sender" |
 | `business.address` | Touch 1 location line, Touch 2 directions block | omit if unknown |
 | `business.parking_notes` | Touch 2 arrival guidance ("street parking opens up after 1 PM") | omit |
 | `business.cancellation_policy` | Touch 1 one-line policy, Touch 3 soft heads-up | "24-hour cancellation window" |
@@ -127,6 +129,17 @@ For first-time clients, this skill stays transactional — the four touches deli
 ### Med-Spa Compliance Review Hook
 
 Any service mapped to a `med-spa-*` cadence class (neuromodulator / filler / laser) routes the final Touch 1 and Touch 2 drafts through the `operations/ai-consent-and-compliance-guardrails` Human-in-the-Loop Review Checklist before send. Specifically: confirm the draft contains no promotional reference to a prescription product (item 2), no diagnosis or adverse-event language (item 3), the client's marketing-channel authorization is on file (item 4), and the EU AI Act Article 50 notice (Artifact 4) appends to Touch 1 for any client whose chart flag indicates EU residency. The Review Checklist sign-off is logged with the booking record.
+
+### CA Clinical-Tier Assessment-First Gate (SB 351)
+
+For any `med-spa-*` cadence-class booking where `business.location.state` is **CA**, the 2026 California enforcement standard (SB 351 + Medical Board oversight; see `knowledge-base/regulations/state-by-state-med-spa-2026.md`) requires that the confirmation sequence **never promise, schedule-to-treat, or imply same-visit clinical delivery** without routing through a Good Faith Exam and a Patient-Specific Order first. This is a *consultation-flow* gate distinct from the AB-489 *language* gate. Apply it to every touch:
+
+- **Touch 1 (confirmation)** carries an explicit assessment-first condition rather than treating the booking as a guaranteed treatment. Use language like: *"This visit begins with a provider assessment; any treatment that day is at your provider's clinical discretion based on that exam."* Never write "your Botox appointment," "your filler is booked," or any phrasing that states or implies the treatment is pre-approved — frame it as a **consultation/assessment** for the requested service.
+- **Touch 2 (prep)** keeps the med-spa prep block but must not instruct the client to prepare *as if treatment is certain* in a way that contradicts the assessment-first frame. Prep guidance is fine ("avoid blood thinners 3–5 days prior"); a guarantee of treatment is not.
+- The gate applies on top of — not instead of — the standard Med-Spa Compliance Review Hook above. A CA clinical-tier draft passes both before send.
+- If `business.location.state` is missing but the business is a med spa, apply the assessment-first frame as the defensible default and flag the missing state in "Notes for sender."
+
+This gate has an upstream owner: the consultation-flow itself is authored by `customer-service/client-consultation-intake` / `virtual-consultation-intake`. This skill's job is to make sure the *confirmation copy* never gets ahead of that gate by promising a treatment the exam hasn't authorized yet.
 
 ### Global Rules
 - Always use the client's first name (never "customer" or "valued client").

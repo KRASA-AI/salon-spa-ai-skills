@@ -4,8 +4,8 @@ category: customer-service
 tools: [claude, chatgpt]
 difficulty: intermediate
 time_saved: "~15 min/campaign"
-version: 2.0
-last_eval_score: 9.1
+version: 2.1
+last_eval_score: 9.2
 ---
 
 # Client Win-Back & No-Show Recovery Sequence
@@ -46,6 +46,7 @@ Load business context from `config.yml` and reference `knowledge-base/terminolog
 | `business.opt_out_footer` | Required on every SMS / email touch | "Reply STOP to opt out" / standard email unsub |
 | `business.signature_block` | Bottom-of-email block | provider name + role |
 | `services.menu` | Correct service name on Touch 1 ("your last balayage") not generic | ask user |
+| `services.cadence_class` | Distinguishes a **cadence-class skip** (missed an expected rebook handed off from `treatment-cadence-rebooking`) from a **hard lapse** (no expected cadence) — drives the lead-line framing on the 60-day soft tier (see Cadence-Class Skip vs. Hard Lapse) | treat as a hard lapse; flag the missing cadence class |
 | `staff.roster[]` | Provider attribution ("Jen has been thinking of you") | "the team" |
 | `pricing.cancellation_policy` | Phrasing of deposit / no-show language at the appropriate tier | omit until tier triggers it |
 | `compliance.regulated_language` | Med-spa: avoid promotional reference to prescription products in winback copy | omit |
@@ -67,6 +68,22 @@ Calibrate tone, offer strength, and exit conditions to how long the client has b
 | **Late cancellation** | Client cancelled inside the cancellation-fee window | Same as no-show first/repeat tier — calibrate by repeat history | Same as no-show tier | 2 | Same as matching no-show tier |
 
 For 60-day soft and no-show first-miss tiers: never quote the cancellation policy in copy — it reads as policy-first not relationship-first, and the data shows it triples the unsubscribe rate. Save the policy reference for the repeat-miss tier where it's earned.
+
+### Cadence-Class Skip vs. Hard Lapse (state inheritance from `treatment-cadence-rebooking`)
+
+Not every quiet client is a true lapse. A client who missed an *expected* retreatment window — a Botox client past week 14, a peel-series client who skipped a session, a 6-week color client now at week 10 — was already being worked by `customer-service/treatment-cadence-rebooking`. When that skill's three-touch cadence sequence completes without a rebooking, it **hands the client off to this skill's 60-day soft tier carrying a `cadence-skip` state flag** rather than letting the client fall into a generic lapse pool. Reading that handoff correctly is the difference between a winback that sounds like it knows the client and one that sounds like a mailing-list blast.
+
+When the inbound trigger is a `cadence-skip` (cadence class present, last visit inside ~1.0–1.5× the cadence window, and a prior `treatment-cadence-rebooking` sequence on record), apply these overrides to the 60-day soft tier:
+
+| Dimension | Hard lapse (default) | Cadence-class skip (inherited) |
+|---|---|---|
+| **Lead line** | "We noticed it's been a minute" | Lead with the **cadence-class "why,"** not the calendar gap: "you're a little past your usual [color refresh / 12-week Botox window] — that's usually when [the gloss starts to warm up / movement comes back]" |
+| **Frame** | Relationship check-in | Continuity of an established rhythm the client already opted into — "let's keep your results on track," not "we miss you" |
+| **Provider attribution** | Helpful but optional | **Required** — inherit the treating provider from the `treatment-cadence-rebooking` record; cadence-skip copy that drops the provider name reads as a downgrade |
+| **Offer** | None on Touch 1 | None — a cadence-skip is a timing nudge, not a defection; an offer this early signals the relationship was transactional and can *teach* the client to skip for a discount |
+| **Med-spa guard** | Standard | Never frame a clinical retreatment as overdue in a way that implies a medical necessity or a guaranteed result; keep the prescription-product compliance guard from `treatment-cadence-rebooking` (no promotional reference to Botox/Dysport/filler by name in a discount context) |
+
+Do **not** escalate a `cadence-skip` client past the 60-day soft tier on the first handoff. If the soft-tier sequence completes without a booking and the client crosses 90+ days, *then* the client converts to a true lapse and inherits the standard 90-day / 120-day framework — at which point the cadence-class "why" recedes and the warm-curious lapse framing takes over. A single missed cadence window is a skip; a missed window plus a missed winback is a lapse.
 
 ### SMS Length Guide (replaces the prior under-80-words ceiling)
 
@@ -172,7 +189,7 @@ In all of these cases, the client routes to a human-only path. Use `customer-ser
 | If the situation is actually… | Use this skill instead |
 |---|---|
 | First 90 days from booking — onboarding cadence | `customer-service/new-client-welcome-journey` |
-| Med-spa clinical retreatment window for the same client | `customer-service/treatment-cadence-rebooking` |
+| Client is still inside (or just past) an expected retreatment window | `customer-service/treatment-cadence-rebooking` — but note the **reverse handoff**: when its sequence completes without a rebooking, it hands off *into this skill's 60-day soft tier* with a `cadence-skip` flag (see Cadence-Class Skip vs. Hard Lapse) |
 | Same-day cancellation fill / hot-list opening | `operations/waitlist-gap-fill-outreach` |
 | Public review reply | `customer-service/review-response-writer` |
 | Private complaint or refund reply | `customer-service/service-recovery-writer` |
