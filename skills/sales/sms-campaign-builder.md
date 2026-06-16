@@ -4,8 +4,8 @@ category: sales
 tools: [claude, chatgpt]
 difficulty: intermediate
 time_saved: "~20 min/campaign"
-version: 2.0
-last_eval_score: 9.1
+version: 2.1
+last_eval_score: 9.2
 ---
 
 # SMS & WhatsApp Marketing Campaign Builder
@@ -123,6 +123,18 @@ Never broadcast to a recipe larger than ~40% of the book without owner sign-off 
    - Off-peak fill campaigns send at the natural planning moment (e.g., Saturday 10 AM for the following week).
    - Never schedule a marketing send on Sunday before noon (perceived as intrusive across most US regions).
 
+### CA AB-489 — Restricted-Term Gate for Recurring / Automated Templates (fires when `business.location.state` includes CA)
+
+An SMS template is rarely sent once. Birthday auto-sends, recurring off-peak fills, visit-iversary, and seasonal-trigger campaigns run as **standing automated templates** — which means a single restricted term re-fires on every recipient, and under **CA AB-489 (effective 2026-01-01) each use is a separate violation**. One bad word in an automated birthday template is not one violation; it is one per send, every month, indefinitely. That multiplication is the specific reason this gate matters more for recurring SMS than for a one-off blast.
+
+For any CA-state campaign touching a clinical-tier service (`compliance.regulated_language` set, or a `med-spa-*` service named — injectables, lasers, IPL, RF, microneedling, IV, medical-grade skincare), run the restricted-term checklist on the template before it goes into an automation:
+
+- **License-implication phrasing:** "doctor-level," "clinician-guided," "MD-formulated," "expert-backed," "physician-grade," "medically supervised," "our medical team recommends" — flag and rewrite unless genuinely tied to a named in-state licensed provider with medical-director sign-off on the standing template.
+- **Credential lookalikes** appended to the sender/brand name in the signature block — flag.
+- **The automation multiplier itself:** before any clinical-tier template enters a recurring send, confirm it carries no restricted term, because the cost of a miss scales with the schedule, not the campaign. Treat a recurring clinical-tier template as **standing copy a board crawler could surface** (e.g., if the template text appears in a public booking-flow or opt-in page), not as an ephemeral one-time message.
+
+When a template trips the gate, route it through `operations/ai-consent-and-compliance-guardrails` Review Checklist item 9 and hold for medical-director sign-off before scheduling. Add the result to the deliverable's Compliance handoff note.
+
 ### When Another Skill Owns This Job
 
 | If the campaign is actually… | Use this skill instead |
@@ -146,7 +158,7 @@ For each campaign, provide:
 - **Audience segment description** (for filtering in the booking/CRM system)
 - **Follow-up message** (optional, for 3–5 days later if no response)
 - **Image suggestion** (for WhatsApp — describe the photo or graphic concept; include button labels for any quick-reply buttons)
-- **Compliance handoff note** referencing the `ai-consent-and-compliance-guardrails` Review Checklist items that apply (marketing-authorization on file, regulated-language filter, WhatsApp template-approval status)
+- **Compliance handoff note** referencing the `ai-consent-and-compliance-guardrails` Review Checklist items that apply (marketing-authorization on file, regulated-language filter, WhatsApp template-approval status — and, for any CA clinical-tier recurring/automated template, the AB-489 restricted-term gate at Review Checklist item 9, with the automation-multiplier caution flagged)
 - **Notes for sender** — segment-count check result, any 2-segment flag, missing config keys to confirm before send
 
 ## Example Outputs
@@ -264,3 +276,10 @@ A small token: priority access to Jen's calendar this fall before we open public
 **Compliance handoff:** Review Checklist items 4 (marketing-channel authorization on file), 7 (native opt-out via WhatsApp). Item 8 is N/A (no complaint/refund/injury context). The "no-discount" framing means item 2 (no promotional reference to a prescription product) is satisfied by default.
 
 **Notes for sender:** This is a margin-protective campaign by design — flag any owner-side push to add a discount before send. Use the actual provider's first name (Maya, Jen, etc.) per `staff.roster`; do not send under "the team."
+
+---
+
+## Version History
+
+- **v2.1** — Added the **CA AB-489 Restricted-Term Gate for Recurring / Automated Templates** per the 2026-06-08 monitor hand-off. SMS templates run as standing automations (birthday, off-peak, visit-iversary, seasonal), so a single license-implication term re-fires per send and each use is a separate AB-489 violation — the automation multiplier is the specific risk. The new section runs the restricted-term checklist on CA clinical-tier templates before they enter an automation and routes a tripped template to `ai-consent-and-compliance-guardrails` Review Checklist item 9; the Output Format compliance-handoff note now surfaces it. Additive only — the Config Integration table, Channel Economics, Segmentation Recipes, and Message Construction Rules are unchanged.
+- **v2.0** — Config Integration table, Channel Economics (SMS vs. WhatsApp), Segmentation Recipes, segment-counting and send-window discipline, three worked examples.

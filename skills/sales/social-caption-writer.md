@@ -4,8 +4,8 @@ category: sales
 tools: [claude, chatgpt]
 difficulty: intermediate
 time_saved: "~10 min/post"
-version: 2.2
-last_eval_score: 9.1
+version: 2.3
+last_eval_score: 9.2
 ---
 
 # Social Media Caption Writer
@@ -99,6 +99,18 @@ Any post promoting a service flagged with a `med-spa-*` cadence class — neurom
 - **Adverse-event language minimization is flagged.** "No downtime" requires a qualifier where any downtime is realistic ("typical recovery is 24–48 hours of mild redness").
 - **Scope of practice.** If the post names a provider performing the service, the provider's `staff.roster[].scope` must include the service category — pulled from `config.yml.compliance.scope_of_practice`. A nail tech named on a neuromodulator post is a publish-blocker.
 - **EU AI Act disclosure** (where applicable per `business.location`) — disclose AI assistance in the caption tail when required.
+
+### CA AB-489 — Restricted-Term Gate for Standing Copy (fires when `business.location.state` includes CA)
+
+A social caption is not a one-off send — it lives on the grid as **evergreen, crawlable copy**. California regulators are running automated **"crawler audits"**: programmatic sweeps of a practice's public web and social surface to flag marketing language that outpaces its actual licensed-supervision posture. Under **AB-489 (effective 2026-01-01)**, an AI system may not use terms, post-nominal letters, or design elements implying the *speaker* is or has the qualifications of a licensed health-care professional unless the content is genuinely supervised by an in-state licensee — and **each use of a restricted term is a separate violation**. Because the caption persists, that exposure compounds every day it stays up.
+
+For any CA-state caption touching a clinical-tier service (`med-spa-*` cadence class — injectables, lasers, IPL, RF, microneedling, IV, medical-grade skincare claims), run the restricted-term checklist before output. Flag and rewrite, do not silently pass:
+
+- **License-implication phrasing in the brand voice:** "doctor-level," "clinician-guided," "MD-formulated," "expert-backed," "medically supervised," "physician-grade," "our medical experts recommend" — flag unless the caption is genuinely tied to a named, in-state licensed provider and the medical director has signed off on that standing claim.
+- **Post-nominal / credential lookalikes** appended to a brand or non-licensed staffer's name (e.g., "[Brand] MD," "Aesthetic Dr.") — flag.
+- **Design-element implications** in the caption-adjacent asset suggestion (white-coat, stethoscope, medical-cross motifs paired with a non-clinical brand) — note in the alt-text/asset suggestion as a verify-before-publish item.
+
+This is the **standing-copy** application the 2026-06-08 monitor flagged: apply the checklist to evergreen captions, not just campaign blasts. When a caption trips the gate, route it through `operations/ai-consent-and-compliance-guardrails` Review Checklist item 9 and hold for medical-director sign-off rather than publishing on the assumption it is "just a caption."
 
 ### Caption Construction Rules
 
@@ -234,3 +246,10 @@ Book with Mia — link in bio.
 **CTA Type:** Booking
 **Best Posting Time:** Thursday or Friday, 7-9 PM
 **Alt Text:** TikTok video showing a hair color transformation from brassy box-dye to ash-blonde balayage.
+
+---
+
+## Version History
+
+- **v2.3** — Added the **CA AB-489 Restricted-Term Gate for Standing Copy** per the 2026-06-08 monitor hand-off. Captions are evergreen, crawlable copy and a documented board "crawler-audit" target; the new section runs the license-implication restricted-term checklist ("doctor-level," "MD-formulated," "our medical experts recommend," credential lookalikes, white-coat asset motifs) on CA clinical-tier captions, treats each restricted term as a separate compounding violation, and routes a tripped caption to `ai-consent-and-compliance-guardrails` Review Checklist item 9 for medical-director sign-off. Additive only — the existing Med-Spa Compliance Hook, Voice-Fingerprint, Staff-Roster Resolver, and platform rules are unchanged.
+- **v2.2** — Config Integration table, Voice-Fingerprint Application, Branded Hashtag Auto-Build, Staff-Roster Resolver, 2026 Trend-Cue Library, Algorithmic-Fit Checklist, Carousel-vs-Reel matrix.
