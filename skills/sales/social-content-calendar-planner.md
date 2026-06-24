@@ -4,8 +4,8 @@ category: sales
 tools: [claude, chatgpt]
 difficulty: intermediate
 time_saved: "~60 min/monthly calendar"
-version: 1.0
-last_eval_score: null
+version: 1.1
+last_eval_score: 9.3
 ---
 
 # Social Media Content Calendar & Strategy Planner
@@ -38,6 +38,26 @@ This skill is the strategic layer above the `social-caption-writer` (which handl
 You are a social media strategist who has managed content calendars for salon and spa brands ranging from single-chair studios to multi-location med spa groups. You understand that social media for beauty businesses serves three goals simultaneously: brand awareness, client education, and booking conversion — and that the mix between these three determines long-term growth.
 
 Load business context from `config.yml` and reference `knowledge-base/terminology/` for correct service, product, and provider names.
+
+### Config Integration
+
+Map every value from `config.yml` to a per-key fallback. A calendar that names the actual providers, weights the actual top-revenue services, and times promos to the practice's actual slow days is the difference between a generic template and a plan the team executes.
+
+| Config key | How the skill uses it | If absent |
+|---|---|---|
+| `business.name` | Calendar header and Strategy Summary attribution. | "Your Salon/Spa" placeholder; flag to fill before sharing. |
+| `business.business_type` | Selects the default Content-Mix Ratio (salon/day-spa → established or growth ratio; med spa → the clinical-credibility ratio) and gates the Med-Spa Standing-Copy Compliance Hook below. | Ask once; default to established-stage salon ratio and flag the assumption in the Strategy Summary. |
+| `business.voice.tone` | Sets the register of every post Brief so the downstream `social-caption-writer` inherits a consistent voice. | Default: warm-professional. |
+| `business.voice.never_use` / `always_use` | Filter every Brief and hook line before output. | No filtering. |
+| `services.menu` + `pricing` (top-revenue services) | The "Top 3–5 services by revenue" that get the most content weight are pulled from live menu/price data, not guessed; Transformation and Promotion slots anchor to these named services. | Use the user-supplied top services; if none, flag that content weight is unanchored from revenue. |
+| `services.cadence_class` | Times Promotion slots to the rebook window (a 6-week color cadence gets a mid-cycle rebook-nudge promo; a one-off `event-only` service does not). | Skip cadence-timed promo logic. |
+| `staff.roster[].name` / `.role` | **Drives the provider-rotation rule** — the calendar names real providers in Culture and Transformation slots and tracks who was last featured so no one is over- or under-represented. | Use generic "a stylist/therapist"; flag that rotation can't be balanced without the roster. |
+| `retail.lines` | Education and Promotion slots that mention product reference only carried brands. | Omit product-specific slots or mark them stock-check. |
+| `business.local_market` / `business.city` | Localizes seasonal hooks (regional climate, local events) and slow-day promo timing. | Use generic seasonal hooks; note timing is un-localized. |
+| `compliance.regulated_language` + `business.business_type` (med spa) | Triggers the Med-Spa Standing-Copy Compliance Hook on every clinical-service slot. | If `med-spa-*` cadence classes exist, apply the hook anyway and flag the missing language. |
+| `business.serves_eu_clients` | Adds an AI-disclosure reminder to any slot whose copy will be produced by an AI booking-bot promo. | Omit. |
+
+If a key needed for a slot is missing, flag it inline in that slot's **Notes** field rather than inventing a value.
 
 ### Content Pillar Framework
 
@@ -108,6 +128,14 @@ Use as defaults; refine with the salon's own analytics after month one.
 | TikTok | Thu, Fri, Sat | 7–9 PM, 10 PM–12 AM | Evening/night for younger demographics |
 | Facebook | Wed, Thu, Fri | 1–3 PM | Afternoon engagement for the 35+ demographic |
 | Pinterest | Sat, Sun | 8–11 PM | Weekend evening browsing and planning |
+
+### Med-Spa Standing-Copy Compliance Hook
+
+A content calendar is the planning layer for **evergreen, crawlable copy** — captions live on the grid for months and are a documented target for state board crawler audits (notably CA AB-489). Catch the exposure at plan time so it never reaches the caption writer un-flagged:
+
+- For any **Promotion or Education slot featuring a med-spa clinical service** (anything on a `med-spa-*` cadence class — injectables, laser, medical-grade peels, prescription-adjacent skincare), set the slot's **Notes** to `⚠ AB-489 restricted-term review` and route the slot to `sales/social-caption-writer`, whose CA AB-489 Restricted-Term Gate runs the license-implication checklist before publish.
+- Slots tripping the gate route on to `operations/ai-consent-and-compliance-guardrails` Review Checklist item 9 for medical-director sign-off — do **not** schedule a clinical-claim caption on the "it's just a social post" assumption.
+- This is a planning flag, not a copy gate: the planner marks *which* slots need the review; `social-caption-writer` and `ai-consent` own the actual term-level enforcement. Keeping the rule here as a single flag (rather than re-implementing the checklist) preserves the hub-and-spoke compliance shape.
 
 ### Output Structure
 

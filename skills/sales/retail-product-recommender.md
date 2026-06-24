@@ -4,8 +4,8 @@ category: sales
 tools: [claude, chatgpt]
 difficulty: intermediate
 time_saved: "~5 min/client"
-version: 3.0
-last_eval_score: 9.1
+version: 3.1
+last_eval_score: 9.2
 ---
 
 # Retail Product Recommender
@@ -60,6 +60,28 @@ The recommendation can name a specific product **only if** its brand family is i
 2. Mark the slot as a stock-check ("ask the front desk if we carry a clarifying shampoo — if not, set a refresh-cycle reorder cue") and leave the brand blank.
 
 Never name a brand not on the list to "fill in" an example. Owners trust this skill specifically because it doesn't push them to source new SKUs at the chair.
+
+### Input Modes — Fast-Path, Standard, and Batch
+
+The skill runs in one of three modes. Pick the lightest mode the input supports — do not ask for fields you can resolve from the service and `config.yml`.
+
+| Mode | Trigger | Behavior |
+|---|---|---|
+| **Fast-Path (minimal input)** | Only **service performed** is given (optionally hair/skin type). | Resolve the rest without round-tripping: infer the **key concern** from the service's most common maintenance need (color → tone/brassiness; keratin → frizz/humidity; facial → the skin type's default concern; gel mani → chip/cuticle), pull the 3-step routine from the configured `retail.lines`, and produce the card immediately. Append a one-line **"Assumptions made"** footer listing every inferred value so the provider can correct in five seconds. Do **not** ask a clarifying question first — a recommendation the provider edits beats a question that stalls the chair. |
+| **Standard** | Service + hair/skin type + concern given. | The full Recommendation Logic below, single client. |
+| **Batch** | A list of clients (pasted appointment-book rows, a CSV, or "do cards for today's book"). | One card per row in a single pass — see Batch Mode. |
+
+**Fast-Path guardrail:** the inventory and compliance rules still apply in full — never invent a brand off-list, and route any `med-spa-*` service through the Med-Spa Compliance Hook even in Fast-Path. Fast-Path shortcuts *input collection*, never *the safety gates*.
+
+### Batch Mode
+
+The most common real use is "generate take-home cards for everyone on today's book," not one client at a time. When the input is a list (pasted rows, a CSV export, or a roster of `{client, service, hair/skin type, concern}`):
+
+1. Produce **one card per row**, in book order, each in the standard Output Format. Rows missing fields fall back to Fast-Path inference for that row only (with its own "Assumptions made" footer).
+2. Lead the batch with a **one-line index** (`Client — Service — Routine total — Delivery moment`) so the front desk can scan the day at a glance.
+3. Close the batch with a **consolidated Reorder-Cue Digest** — group every client whose `services.cadence_class` fires a refresh-cycle cue by week, so the desk can set one reminder sweep instead of ten. (Skip clients with no resolved cadence class.)
+4. Flag any `med-spa-*` row in the index with a `⚠ compliance review` marker and list those rows together at the top of the digest so they route through `operations/ai-consent-and-compliance-guardrails` Review Checklist as a single batch, not one at a time.
+5. Never let batch volume relax the inventory rule — if a row's ideal product is off-list, mark that slot stock-check exactly as in single mode.
 
 ### Delivery-Moment Choice
 
