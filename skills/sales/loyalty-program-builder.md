@@ -4,8 +4,8 @@ category: sales
 tools: [claude, chatgpt]
 difficulty: intermediate
 time_saved: "~45 min/program design"
-version: 1.1
-last_eval_score: 9.0
+version: 1.2
+last_eval_score: 8.7
 ---
 
 # Salon & Spa Loyalty Program Builder
@@ -55,6 +55,14 @@ Map every value from `config.yml` to a per-key fallback. The program blueprint m
 
 If a required config key is missing, produce the program blueprint anyway and surface the gap in the Risk Flags section (extended output) or in the rationale block (standard output) — never silently substitute a fallback as if it were the practice's confirmed input. The program's value depends on transparent assumptions; a launch that ships with unverified burn-rung dollar amounts or an unsupported platform module will burn enrollment goodwill on day one.
 
+### Output Modes
+
+The skill runs in one of three depths. If the operator does not name a mode, infer it: a first-time launch with full config → **standard**; "just sketch me a structure" / minimal input → **fast-path**; a board/partner review, a migration, or any med-spa-inclusive program → **extended**.
+
+- **Fast-Path (minimal input).** Trigger when only `business.business_type` + `pricing.average_ticket` (or a single ticket figure) are available, or when the operator explicitly wants a quick sketch. Produce sections 1–4 only (Program Name, Earn, Burn, Tier Structure) using cadence-class and ticket fallbacks, and append a one-line **"Assumptions made"** footer the operator can correct in seconds. Do **not** stall on a clarifying round-trip — a structure the operator edits beats a question that delays the design. The state/platform/med-spa **safety flags still fire in full**: Fast-Path shortcuts input collection, never the CA gift-card rule, the platform-module check, or the med-spa earn-rule guard.
+- **Standard (default).** All 10 output sections, rendered against config, with assumptions surfaced in the rationale block rather than a full Risk Flags table. This is the normal first-launch deliverable.
+- **Extended.** Everything in Standard plus the full **Risk Flags** table (section 10), the migration-mode member-comms draft (when `loyalty_program` is populated), and — for any med-spa-inclusive program — the medical-director sign-off line and the FDA/state inducement-claim audit spelled out per tier. Use for migrations, multi-location rollouts, and any program touching a `med-spa-*` cadence class.
+
 ### Design Principles
 
 1. **Rewards must feel achievable within 6–8 visits.** If a client can't see the finish line, they disengage. Reverse-engineer the point value from the client's typical visit frequency.
@@ -96,6 +104,8 @@ Produce a program blueprint with the following sections:
 ## Example Output
 
 ### Program Blueprint — "Radiance Rewards" for a Mid-Sized Hair Salon
+
+> **Illustrative figures only.** Every dollar amount and spend band below (the $25/$50/$65/$120/$280 burn rungs and the $999 / $1,000–$2,499 / $2,500+ tier thresholds) is a worked-example placeholder, **not** a recommended default. When this skill runs for a real practice it must replace these with `services.menu` + `pricing` values and `pricing.average_ticket × annual-visit-count × tier-percentile` bands, per the Config Integration rules above. Do not carry these numbers into a live program.
 
 **Context assumed:** Average ticket $95, visit frequency every 7 weeks, top services: color/highlights, cut & blowout, keratin treatments. Brand voice: polished and warm.
 

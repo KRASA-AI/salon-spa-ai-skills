@@ -1,6 +1,6 @@
 # State-by-State Med Spa Regulation Reference — 2026
 
-*Last updated: 2026-06-22. Compiled from landscape monitor runs 2026-04-12 through 2026-06-22. This is a curation reference for use by skills in this repo — not legal advice. Route to the practice's medical director and healthcare attorney for citation-level review and real-time status.*
+*Last updated: 2026-06-29. Compiled from landscape monitor runs 2026-04-12 through 2026-06-29. This is a curation reference for use by skills in this repo — not legal advice. Route to the practice's medical director and healthcare attorney for citation-level review and real-time status.*
 
 ---
 
@@ -72,9 +72,10 @@ Skills should cite entries by state name and rule category only — never quote 
 ### Indiana
 - **SB 282 — SIGNED INTO LAW (status change, 2026-06-08 monitor cycle)**: Governor Mike Braun signed SB 282 on **March 5, 2026** (previously logged as "introduced"). Two distinct effective dates:
   - **Most operational provisions take effect July 1, 2026.**
-  - **Registration deadline: January 1, 2027** — med spas have until then to register with the Indiana Medical Licensing Board.
+  - **Board registration framework must be established by October 1, 2026 (added 2026-06-29 monitor cycle)** — the Indiana Medical Licensing Board (with the Board of Pharmacy) must publish the formal facility-registration procedures by **October 1, 2026**. This is the intermediate milestone between the July 1, 2026 operational go-live and the January 1, 2027 registration deadline: operators cannot complete registration until the Board publishes the mechanics, expected on or before October 1, 2026.
+  - **Registration deadline: January 1, 2027** — med spas have until then to register with the Indiana Medical Licensing Board. **Non-compliance penalty (added 2026-06-29 monitor cycle): operating without a valid registration after January 1, 2027 is unlawful and carries a fine of up to $5,000.**
   - Substance (now enacted): mandatory med-spa registration; designation of a responsible practitioner present for a "sufficient amount of time"; adverse-event reporting to the Board no later than **fifteen (15) days** after a serious adverse event (with the prescription medication involved and relevant records). **Correction (2026-06-22 monitor cycle): a prior cycle logged this window as "5 days." The engrossed/enacted bill text reads "not later than fifteen (15) days after the occurrence of a patient's serious adverse event" — the correct figure is 15 days.** Some secondary blog summaries still report "5 days" (apparently carried over from earlier proposed drafts or conflated with the Iowa proposal); the enacted Indiana figure is 15 days. The precise definition of a "serious adverse event" and the exact notice mechanics are being finalized in Medical Licensing Board rulemaking.
-- **Skill hook**: `cancellation-no-show-policy-author` (IN — now an enacted requirement, not a pending bill: July 1, 2026 operational date + January 1, 2027 registration deadline in the med-spa compliance footer); `membership-program-builder` (IN registration flag in the compliance checklist).
+- **Skill hook**: `cancellation-no-show-policy-author` (IN — now an enacted requirement, not a pending bill: July 1, 2026 operational date + October 1, 2026 board-framework milestone + January 1, 2027 registration deadline, with up-to-$5,000 non-compliance fine, in the med-spa compliance footer); `membership-program-builder` (IN registration flag in the compliance checklist).
 
 ### Iowa
 - **HSB 591 — Medical Spa Oversight Act** (introduced 2026):

@@ -4,8 +4,8 @@ category: sales
 tools: [claude, chatgpt]
 difficulty: intermediate
 time_saved: "~30 min/program design"
-version: 1.1
-last_eval_score: 9.0
+version: 1.2
+last_eval_score: 8.7
 ---
 
 # Salon & Spa Referral Program Builder
@@ -53,6 +53,14 @@ Map every value from `config.yml` to a per-key fallback. The referral mechanic m
 
 If a required config key is missing, produce the referral blueprint anyway and surface the gap in Risk & Compliance Notes (extended output) or in the rationale block (standard output) — never silently substitute a fallback as if it were the practice's confirmed input. Referral programs that ship with a placeholder business name in the share-asset SMS, or with an anchor offer the platform cannot track, lose the launch-week momentum that defines the program's first six months.
 
+### Output Modes
+
+The skill runs in one of three depths. If the operator does not name a mode, infer it: a standard launch with full config → **standard**; "just give me the mechanic and the share copy" / minimal input → **fast-path**; any med-spa-inclusive program or a multi-location rollout → **extended**.
+
+- **Fast-Path (minimal input).** Trigger when only `business.business_type` + one anchor service (or a single ticket figure) are available. Produce sections 1, 2, 3, 4, and 6 only (Name, Core Mechanic, New-Client Reward, Referrer Reward, Share Assets) using cadence-class and LTV fallbacks, and append a one-line **"Assumptions made"** footer. Do not stall on a clarifying round-trip. The med-spa cash-incentive hard block, the platform tracking-feasibility check, and the state-compliance gate **still fire in full** — Fast-Path shortcuts input collection, never the safety gates.
+- **Standard (default).** All 11 output sections rendered against config, with assumptions surfaced in the rationale block. The normal launch deliverable.
+- **Extended.** Everything in Standard plus the full **Risk & Compliance Notes** table (section 10), the medical-director sign-off line for any med-spa-inclusive program, and the per-state compliance block spelled out. Use for med-spa programs and multi-location rollouts.
+
 ### Design Principles
 
 1. **Two-sided rewards always outperform one-sided.** Give both the referrer AND the new client something of real value. One-sided programs feel transactional; two-sided programs feel like a gift.
@@ -95,7 +103,11 @@ Produce a referral program blueprint with these sections:
 
 10. **Risk & Compliance Notes** — Flag medical spa regulations (many US states restrict cash incentives for medical services like neurotoxins and filler), SMS consent compliance, and any double-dip concerns.
 
-11. **Economics Check** — Simple CAC math: reward cost per new client vs. estimated LTV. Call out the break-even number of repeat visits.
+11. **Economics Check** — Resolve to a single **go / no-go**, in this order, so the operator is never left with three loosely-connected figures:
+    1. **Total reward cost per acquired client** = new-client reward cost + referrer reward cost (count both sides; the referrer reward only triggers on a completed first visit, so it is a real per-acquisition cost).
+    2. **CAC ceiling** = `LTV ÷ 6–8` (a healthy paid channel spends at most one-sixth to one-eighth of lifetime value to acquire). State the LTV you used and whether it came from operator input or the `pricing` fallback.
+    3. **Verdict** — the program **clears** when total reward cost per acquired client ≤ the CAC ceiling; otherwise it does **not** clear, and the Optimization Levers (smaller reward, points-not-cash referrer reward, off-peak-only anchor) must be applied until it does. Do not present the bare "target CAC" the operator named as the test — the named CAC is a budget preference; the LTV-derived ceiling is the economic test.
+    4. **Break-even line** — translate the cleared cost into the number of repeat visits beyond the first that the new client must complete to cover the program at the practice's contribution margin, as a sanity check on the verdict.
 
 ## Example Output
 
@@ -153,7 +165,9 @@ Front: "Share the spa. Save together." | Back: "Your friend gets $30 off their f
 - All SMS shares must be opt-in — the business sends the invite to the referrer, not directly to the friend.
 - Spell out the terms on the website footer to avoid disputes over expired credits.
 
-**Economics Check:**
-- Reward cost per successful referral: ~$60 ($30 to friend via discount, $30 credit to referrer).
-- Target CAC: $40 — referral CAC is higher per new client, but LTV is also higher (referred clients have ~30% higher annual retention industry-wide).
-- Break-even: New client must complete ~1.5 additional visits beyond the first to cover the program cost at normal ticket size. Most referred clients exceed this within their first 6 months.
+**Economics Check (resolves to go / no-go):**
+- **Total reward cost per acquired client:** ~$60 ($30 friend discount + $30 referrer credit, both real costs — the referrer credit only issues on a completed first visit).
+- **LTV used:** ~$1,400 (day-spa `pricing` fallback: $135 ticket × ~4 visits/yr × ~2.5 retained years; operator-supplied LTV would override this).
+- **CAC ceiling (LTV ÷ 6–8):** ~$175–$235.
+- **Verdict: CLEARS.** $60 acquisition cost sits well under the $175–$235 ceiling, with headroom to run a double-reward push without breaching it. (Note the operator's $40 "target CAC" is a budget preference, not the economic test — the program clears on the LTV-derived ceiling even though $60 exceeds the $40 preference; flag this to the operator so the preference can be revised or the reward trimmed if they want to hold the $40 line.)
+- **Break-even:** at the day spa's contribution margin the new client covers the ~$60 program cost in ~1.5 repeat visits beyond the first — comfortably inside a referred client's typical first-6-month pattern.
