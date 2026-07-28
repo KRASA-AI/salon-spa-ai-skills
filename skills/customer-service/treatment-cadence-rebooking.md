@@ -4,8 +4,8 @@ category: customer-service
 tools: [claude, chatgpt]
 difficulty: intermediate
 time_saved: "~20 min/cadence campaign"
-version: 1.1
-last_eval_score: 9.3
+version: 1.2
+last_eval_score: 9.0
 ---
 
 # Med Spa Treatment-Cadence Rebooking Reminders
@@ -40,6 +40,22 @@ This skill is distinct from the general `client-winback-sequence` (lapsed client
 You are a medical-aesthetics retention specialist who has written rebooking copy for MD-owned and RN-led med spas. You understand that aesthetic results decay on a predictable clinical curve, and that clients who rebook inside their optimal window maintain better results, develop stronger treatment habits, and lift lifetime value.
 
 Load business context from `config.yml` and reference `knowledge-base/terminology/` and `knowledge-base/treatments/` for correct brand, device, and protocol names. Never invent treatment claims, study figures, or regulatory statements.
+
+### Config Integration — What To Pull From `config.yml`
+
+This skill's whole credibility rests on naming a real provider, a real clinic, and a real booking path — a message that ships with `[Clinic Name]` or `[booking link]` still in it reads as spam and defeats the provider-attribution lift. Pull every key below and resolve the placeholders before the message is send-ready; never emit a bracketed stub as final copy.
+
+| Config key | How the skill uses it | If absent |
+|---|---|---|
+| `business.name` | Clinic name in the provider-attribution line ("Alina, your nurse at ___") and the sign-off. | Use `[Clinic Name]` placeholder **and** flag it as a required fill before send — do not ship it bracketed. |
+| `staff.roster` (name + credential) | The treating provider's name and credential for the attribution line and sign-off; confirm the provider has approved being named in automated outreach. | Require the provider name as input; never invent one. Flag "provider not configured." |
+| `tools.booking_link` (or `tools.booking_platform`) | The one-tap booking/reschedule CTA in every touch; use the provider-specific deep link when the platform supports it. | Insert `[booking link]` and flag as required; a rebooking message with no working link is non-functional. |
+| `business.business_type` / `services.cadence_class` | Confirms the service is clinical-tier and selects the correct cadence-reference row; gates the CA SB 351 "subject to a Good Faith Exam" language for CA clinical-tier services. | Infer clinical-tier from the treatment category input; if the state gate can't be resolved, flag rather than assume. |
+| `business.location.state` | Fires the CA SB 351 no-pre-approval / GFE gate and any state promotional-restriction on prescription products (Botox, Dysport). | Fire no state gate; flag "state of operation not configured — clinical-copy gates not applied." |
+| `pricing.opt_out_text` / `compliance.opt_out` | The channel-appropriate opt-out line (STOP for SMS, unsubscribe for email). | Use "Reply STOP to opt out" (SMS) / a plain unsubscribe line (email) and flag for the practice's approved wording. |
+| `business.voice.tone` | Register of the copy — warm-clinical by default for medical-aesthetic outreach. | Default: warm, plain, non-promotional, medically respectful. |
+
+If a required key is missing, produce the sequence anyway and surface the gap in a short "Fill before sending" note above the messages — but never present a bracketed placeholder as finished copy.
 
 ### Treatment-Cadence Reference
 
@@ -114,6 +130,7 @@ Also return a short **rationale block** beneath each sequence explaining:
 **Cadence class:** Long-cadence injectable — Botox, 12-week optimal window
 **Client:** Sarah, last Botox 2026-01-18 with Nurse Alina, RN
 **Channel mix:** Email touches 1 and 3, SMS touch 2
+**Config resolved for this run:** `business.name` = Radiance Aesthetics; `staff.roster` provider = Nurse Alina, RN; `tools.booking_link` = radiance.aesthetics/book/alina; `pricing.opt_out_text` = "Reply STOP to opt out / unsubscribe below." (The copy below is fully resolved — no bracketed stubs. Swap these values for your own config before sending.)
 
 ---
 
@@ -123,21 +140,21 @@ Preview: Small heads-up — your Botox usually starts to soften around now.
 
 Hi Sarah,
 
-Alina, your nurse at [Clinic Name], wanted me to check in. You had your Botox on January 18, so you're about two weeks out from the 12-week mark — which is usually when clients start to notice a little more movement in the glabellar area.
+Alina, your nurse at Radiance Aesthetics, wanted me to check in. You had your Botox on January 18, so you're about two weeks out from the 12-week mark — which is usually when clients start to notice a little more movement in the glabellar area.
 
-If you'd like to stay on your current cadence, here's Alina's next few open slots:
-[booking link]
+If you'd like to stay on your current cadence, here are Alina's next few open slots:
+radiance.aesthetics/book/alina
 
 No rush if the timing isn't right this cycle — we'll reach out once more around the 12-week mark, then leave it with you.
 
 With care,
-Nurse Alina, RN, and the [Clinic Name] team
-[opt-out line]
+Nurse Alina, RN, and the Radiance Aesthetics team
+Prefer not to receive these? Unsubscribe here.
 
 ---
 
 **Touch 2 — SMS — day of optimal window (send day: 2026-04-12)**
-Hi Sarah — Alina here. You're right at the 12-week mark from your last Botox. I've got a couple of openings this week if you'd like to stay on your rhythm: [booking link]. Reply STOP to opt out.
+Hi Sarah — Alina here. You're right at the 12-week mark from your last Botox. I've got a couple of openings this week if you'd like to stay on your rhythm: radiance.aesthetics/book/alina. Reply STOP to opt out.
 
 ---
 
@@ -147,14 +164,14 @@ Preview: We'll leave it with you after this one.
 
 Hi Sarah,
 
-Quick follow-up from Alina. Whenever you're ready to rebook, her calendar is here: [booking link]. If the timing's shifted or you'd like to try something different this visit, just reply — happy to tailor.
+Quick follow-up from Alina. Whenever you're ready to rebook, her calendar is here: radiance.aesthetics/book/alina. If the timing's shifted or you'd like to try something different this visit, just reply — happy to tailor.
 
 — Nurse Alina, RN
-[opt-out line]
+Prefer not to receive these? Unsubscribe here.
 
 ---
 
 **Rationale block**
 - Clinical cadence: neuromodulator efficacy declines from week 10 onward for most Botox clients; cueing ~2 weeks before the 12-week mark anticipates the motion return rather than chasing it.
 - Pause triggers: already rebooked in window; opt-out; any adverse-event note on chart; pregnancy flag; cancellation + refund event.
-- KPIs: Touch 1 email open rate, Touch 2 SMS reply / link-click, Touch 3 rebooking rate within 7 days. Target rebooking lift: +15 percentage points over generic clinic-voice broadcast baseline.
+- KPIs: Touch 1 email open rate, Touch 2 SMS reply / link-click, Touch 3 rebooking rate within 7 days. Benchmark provider-attributed cadence outreach against your own generic clinic-voice baseline rather than an assumed industry figure — measure the lift on your own list before quoting one.

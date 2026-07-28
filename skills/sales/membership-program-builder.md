@@ -4,8 +4,8 @@ category: sales
 tools: [claude, chatgpt]
 difficulty: intermediate
 time_saved: "~3 hr/program design"
-version: 1.1
-last_eval_score: null
+version: 1.2
+last_eval_score: 9.1
 ---
 
 # Salon & Spa Membership Program Builder
@@ -34,7 +34,26 @@ Both skills can coexist: a loyalty layer on top of a membership (bonus points fo
 - A day spa is trying to reduce revenue seasonality by pre-selling treatment credits.
 - The owner is evaluating whether to split an existing loyalty program into a separate membership tier.
 
+## Fast Path — Three Inputs, One Program
+
+**Do not make the owner assemble a data pack before they can see anything.** This skill runs in three modes. Default to **Fast-Path** unless the user supplies more, and say which mode you ran in.
+
+| Mode | Inputs required | What you produce | When to use |
+|---|---|---|---|
+| **Fast-Path** | **Three, and only three**: (1) business type (salon / day spa / med spa), (2) top 3 services with their retail prices, (3) current average ticket *or* "I don't know" | Program Summary, Tier Blueprint (2–3 tiers), Breakeven Model (on the mid-tier if there are three, otherwise on the tier the program is built on), Enrollment Copy (in-chair pitch + SMS), and a **Gaps block** naming exactly which numbers to come back with. Nothing else. | Default. First contact, day-one owner, no `config.yml`, or the owner just wants to see what a membership would even look like before investing an hour in it. |
+| **Standard** | Fast-Path plus visit frequency, MRR goal, platform, brand voice | Everything in Fast-Path plus the MRR Forecast, Cancellation & Pause block, Loyalty Integration Note, Churn-Reduction Playbook, and Launch Plan | The owner has their numbers and intends to launch. |
+| **Extended** | Standard plus `config.yml` populated, state(s), loyalty program details, compliance context | Full package, including the KPI Dashboard, Compliance Checklist, and Routing Map | Med-spa launches, multi-state practices, or a re-design of an underperforming program. |
+
+**Fast-Path rules:**
+- If average ticket is unknown, **price the tiers off the three service prices the owner gave you** — those are real numbers about their business, and they are enough to build a blueprint. **Do not invent an average ticket, and do not pull one from the Industry Reference Benchmark table: that table does not contain an average-ticket row, and manufacturing one would be exactly the fabricated-statistic failure this skill forbids.** Say plainly in the Gaps block that the figure is missing and what it will change. The one thing the reference table *can* legitimately sanity-check is whether your monthly price lands in the observed band for the business type — and even then, as a band, not a target.
+- Never ask more than **one** follow-up question in Fast-Path. If a second question feels necessary, make the assumption, state it in the Gaps block, and produce the program anyway. A directional blueprint the owner can react to beats a perfect one they never get because the intake form scared them off.
+- The Fast-Path output must be **runnable as-is**: the in-chair pitch script should be readable aloud by a front-desk hire on the day it's produced, even if the pricing is later refined.
+- Med spa in Fast-Path still gets the **no-clinical-outcome-language rule** and the medical-director sign-off flag. Those are never deferred to a later mode.
+
 ## Required Input
+
+*(Standard and Extended modes. For Fast-Path, see the three inputs above — do not collect this list.)*
+
 - **Business profile**: salon / day spa / med spa, state(s) of operation, whether any EU clients are served, whether a loyalty program already exists.
 - **Service mix and cadence classes** (or use `config.yml.services` if present): top 5–8 services by revenue, typical visit frequency per service, gross ticket per service.
 - **Current average ticket and visit frequency**: e.g., "$95 average ticket, 6 visits/year" is the starting point for the breakeven model.
@@ -42,7 +61,7 @@ Both skills can coexist: a loyalty layer on top of a membership (bonus points fo
 - **Membership model preference** (or defer to the skill's recommendation): flat-rate, tiered, banking-credit, annual-commitment, or hybrid.
 - **Platform / billing capability**: does the booking platform support recurring billing and auto-renewal? (Drives whether annual vs. monthly is the right launch vehicle.) Common platforms with native membership billing: Mindbody, Zenoti, Meevo, Boulevard, GlossGenius Pro, Vagaro. If none, the skill notes the gap and recommends a billing-add-on.
 - **Brand voice**: warm-indulgent, clinical-precise, boutique-elevated, accessible-friendly.
-- **Output preference**: brief (program blueprint only), standard (blueprint + breakeven model + launch plan), or extended (full package including churn-reduction playbook, email/SMS drip, and compliance checklist).
+- **Output preference**: Standard or Extended — the mode table above is the single definition of what each one contains; do not re-derive it here. If the user hasn't asked for one and hasn't supplied the data, run **Fast-Path** and say so.
 
 ## Instructions
 
@@ -52,7 +71,7 @@ Load business context from `config.yml`. Specifically reference:
 - `config.yml.business_type` — drives tier naming conventions, default service inclusions, and the med-spa compliance hook.
 - `config.yml.services.cadence_class` — determines what services belong in which tier and their cost-of-delivery baseline.
 - `config.yml.pricing` — drives the default retail value of included services (the 70–80% pricing rule is applied against these values).
-- `config.yml.business.location.state` — drives refund-grace-window language (California 7-day right-of-rescission for certain subscriptions; New York consumer-protection cancellation rules; Colorado HB 1024 prominent-display for med-spa memberships; Indiana 2027 med-spa registration flag).
+- `config.yml.business.location.state` — drives refund-grace-window language (California's health-studio / wellness-contract regime is longer and stricter than the common ~3-day default — **cite by category, route to counsel for the exact term; do not state a specific day-count from this skill**; New York consumer-protection cancellation rules; Colorado HB 1024 prominent-display for med-spa memberships; Indiana 2027 med-spa registration flag).
 - `config.yml.tools` — names the booking platform and constrains the billing language.
 - `config.yml.loyalty_program` — if a loyalty program exists, the membership tier design must either integrate with or explicitly sit alongside it (never create a hidden conflict where a member earns loyalty points on services they've already pre-paid at a discount — resolve the earn-on-membership question explicitly).
 
@@ -62,7 +81,7 @@ Load business context from `config.yml`. Specifically reference:
 |---|---|---|
 | `business.name` | Program-summary header attribution, the enrollment SMS sign-off, and the tier-blueprint table caption | "the practice" — flag in the rationale block that the name placeholder must be filled before launch |
 | `business.business_type` | Selects the correct column of the 2026 Industry Reference Benchmark table (salon / day spa / med spa) — drives default monthly price band, expected MRR contribution, member visit-frequency uplift, and typical churn band; gates the med-spa compliance hook (no-clinical-outcome language, HIPAA-aware enrollment copy, state refund-grace flag, DEA telehealth December 2026 note) | if any `med-spa-*` cadence class exists in `services.cadence_class`, render the med-spa compliance hook for those tiers only; otherwise flag and apply the salon defaults |
-| `business.location.state` | Drives the refund-grace-window language (3-day federal default; CA 7-day for health-related categories per B&P § 8599; NY consumer-protection enrollment-disclosure rules), the CO HB 1024 prominent-display rule for med-spa memberships, the IN SB 282 2027-01-01 registration flag, and the NJ February 2026 joint-rule injectable-oversight requirement | use the 3-day default and flag the missing state explicitly in the Compliance Checklist — never silently default |
+| `business.location.state` | Drives the refund-grace-window language (a ~3-day right of rescission is the common default; **California's health-studio / wellness-contract rules are longer and stricter — cite them by category and send the owner to counsel for the exact section and term; do not quote a code section from this skill**), the NY consumer-protection enrollment-disclosure rules, the CO HB 1024 prominent-display rule for med-spa memberships, the IN SB 282 2027-01-01 registration flag, and the NJ February 2026 joint-rule injectable-oversight requirement | use the ~3-day default, and flag the missing state explicitly in the Compliance Checklist — never silently default |
 | `services.cadence_class` | Determines what services belong in which tier (an `injectable-cadence` class cannot be bundled into a non-clinical tier; `color-cadence` belongs in mid- or top-tier given the chair-time; `massage-60` and `facial-custom` are typical entry-tier anchors) and drives the cost-of-delivery baseline for the margin-first rule | infer from `services.menu` text matching; if no signal, write a two-tier program and flag the gap in the rationale |
 | `services.menu` and `pricing` | Anchors the retail value column in the tier blueprint (the 70–80% retail-value rule is applied against live service prices, not a generic figure); drives the breakeven model's visit-frequency math; provides the actual service names that appear in the in-chair pitch script | use the 2026 industry-reference monthly price band and mark every tier "industry reference, not your numbers" — flag the gap and recommend running the skill again once `pricing` is populated |
 | `pricing.average_ticket` and `pricing.visit_frequency` | Anchors the MRR forecast table baseline (50-member start is a default — if the practice has visit-frequency data, the forecast can run from the practice's actual top-quintile-by-visit-frequency client count as the realistic first-month enrollment target) | use the 50-member default and flag that the enrollment target is a generic starting point |
@@ -76,6 +95,8 @@ If a required config key is missing, produce the program blueprint anyway and su
 ### 2026 Industry Reference Benchmarks
 
 Use these as the at-typical reference when the practice's own data is not provided. Mark them as "industry reference" in any rationale block.
+
+**Read these as directional bands, not measurements.** They are composited from vendor and trade-press reporting whose methodologies are not comparable and whose samples skew toward practices already running membership software. They are useful for *sizing* a first program — is $89 or $189 the right neighborhood? — and useless as a claim. **Never present a figure from this table to an owner as a fact about their business, never cite it to a lender or a landlord, and never use it in client-facing copy.** Once the practice has 90 days of its own enrollment and churn data, that data supersedes every row here.
 
 | Metric | Hair salon | Day spa | Med spa |
 |---|---|---|---|
@@ -109,9 +130,9 @@ Recommend the appropriate model based on the business profile and goal. Present 
 
 2. **70–80% retail-value rule**: price each tier so members pay 70–80% of the retail value of the included treatments. Below 70% = margin pressure. Above 80% = the value proposition isn't compelling enough to enroll.
 
-3. **Breakeven model (always produce this)**: at what visit frequency does the member become more profitable than a non-member (accounting for the lower per-visit price offset by higher visit frequency and retail attachment)? A member who visits 2.9× more often than a non-member generates more gross revenue even at a 25% discount — but only if the practice has the appointment capacity to absorb the visits.
+3. **Breakeven model (always produce this)**: at what visit frequency does the member become more profitable than a non-member (accounting for the lower per-visit price offset by higher visit frequency and retail attachment)? The mechanism to explain to the owner is that a member who visits **materially more often** than a non-member can generate more gross revenue even at a discount — the higher frequency outruns the lower per-visit price — **but only if the practice has the appointment capacity to absorb the extra visits.** Without the capacity, a membership converts full-price walk-in demand into discounted member demand and the practice goes backwards. (Do not attach a specific frequency multiplier to this claim; the reference table's multipliers are directional bands, not a number to build a margin case on.)
 
-4. **Churn modeling**: build a simple month-12 MRR forecast using the industry churn rate as the baseline. E.g., if you enroll 50 members at $99/mo with 7% monthly churn, expected month-12 active members ≈ 50 × (0.93^12) ≈ 19. At 5% churn ≈ 27. The difference is the argument for the churn-reduction playbook.
+4. **Churn modeling**: build a simple month-12 MRR forecast and **show the exponent** so the owner can re-run it. Active members in month *n* = starting members × (1 − churn)^(n−1). E.g., 50 members enrolled at $99/mo: at **7%** monthly churn, month-12 actives ≈ 50 × 0.93^11 ≈ **23**; at **5%**, ≈ 50 × 0.95^11 ≈ **28**. Two points of churn is worth roughly six members and ~$600/mo of MRR by the end of year one — *that* is the argument for the churn-reduction playbook. (Compound from month 1, i.e. exponent *n*−1, not *n*: the members you enrolled in month 1 have not churned yet in month 1. Getting this off by one is the most common spreadsheet error here.)
 
 ### Tier Design Rules
 
@@ -127,20 +148,20 @@ Recommend the appropriate model based on the business profile and goal. Present 
 
 ### Churn-Reduction Playbook
 
-Churn is the #1 threat to membership MRR. Industry-average churn of 5–10%/month means a 100-member base shrinks to 50 in 8–12 months without active retention effort. Include the following churn-reduction moves in the program design:
+Churn is the #1 threat to membership MRR, and the reason is compounding, not any particular industry figure. **Do the arithmetic in front of the owner** — it is more persuasive than a benchmark and it is actually true: at **5%** monthly churn a 100-member base halves in about **14 months** (0.95^13.5 ≈ 0.5); at **10%** it halves in about **7 months** (0.90^6.6 ≈ 0.5). So the difference between a well-run program and a neglected one is not a few points of churn — it is *twice the life* of every member the practice enrolls. Use the practice's own churn once it has 90 days of data; until then run both ends and show the spread. Include the following churn-reduction moves in the program design:
 
 - **Day-15 utilization nudge**: if a member hasn't booked by the 15th of the month, send an automated message ("Your [Tier Name] credit is ready — let's use it before month's end"). Platform-automated where possible; `customer-service/booking-confirmation-sequence` Touch 0 variant is the prompt-skill lever.
 - **Skip-month save**: before processing a cancellation, the platform (or front desk) offers a one-month pause. Allow 1–2 pause months per rolling 12-month period. Communicate the freeze/pause terms in the membership agreement (the `cancellation-no-show-policy-author` skill's carve-out paragraph handles this).
 - **Member-anniversary check-in**: at the 3-month and 12-month mark, send a personal note from the owner or assigned provider. High-touch beats discount. Route through `_shared/email-drafter`.
 - **Tier-up trigger**: if a member's service consumption in months 2–3 is consistently at or above the top-tier value, trigger an upgrade conversation before churn happens at the "I'm not using enough to justify this" tier.
-- **Exit-survey rule**: every cancellation gets a one-question text ("Was it the price, scheduling, or something else?"). Route feedback to `operations/weekly-kpi-owner-briefing` as a KPI row. Exit surveys typically reveal 60–70% of churn is scheduling-related, not price-related — a diagnosis that changes the churn-response strategy entirely.
+- **Exit-survey rule**: every cancellation gets a one-question text ("Was it the price, scheduling, or something else?"). Route feedback to `operations/weekly-kpi-owner-briefing` as a KPI row. The reason this single question earns its place: owners overwhelmingly assume churn is a **price** objection and respond by discounting, when a meaningful share of it is **scheduling** — a member who could not get a convenient slot and stopped feeling the value. Those two diagnoses call for opposite responses (re-price vs. open capacity / add the Day-15 nudge), so guessing is expensive. Do not quote the practice a split; make them collect their own for one quarter, then respond to what it says.
 
 ### Med-Spa Compliance Hook
 
 For any med spa membership output:
 - **No clinical guarantee language**. The membership agreement must not promise specific clinical outcomes. Use service-credit language ("a monthly credit toward a 60-minute treatment of your choice"), not outcome language ("your monthly anti-aging treatment").
 - **HIPAA-aware enrollment copy**: enrollment SMS and email should not reference specific clinical services by name in any external-facing communication that could log as PHI.
-- **State refund-grace window**: most states require a 3-day right of rescission for recurring-fee contracts. California extends this to 7 days for health club and some wellness service contracts (Business & Professions Code § 8599). Note the applicable state rule explicitly and route to the medical director / attorney for sign-off.
+- **State refund-grace window**: a right of rescission (commonly around 3 days) applies to recurring-fee consumer contracts in most states, and **California's health-studio / wellness-contract regime is longer and more prescriptive** — it carries specific contract-form and cancellation requirements. **Cite it by category and route to counsel for the exact statute, section, and term. Do not quote a code section from this skill: an authoritative-looking but wrong citation is worse than an honest "your attorney must confirm this," and it is the practice, not this skill, that signs the contract.** (This is the skill's own "never quote a state statute verbatim" rule applied to itself.)
 - **Colorado HB 1024 prominent-display rule** (effective 2025-08-05): membership terms, including the cancellation policy, must be prominently displayed at the point of enrollment in the digital booking flow and at the treatment room.
 - **Indiana SB 282 (deadline 2027-01-01)**: med spa registration will be required; the membership program is part of the clinic's regulated service offering. Flag for the medical director.
 - **DEA telehealth prescribing** (extended to December 31, 2026): if the membership tier includes a GLP-1 or HRT component that relies on telehealth prescribing, note that the DEA COVID-era extension ends December 2026 and the program must be structured so that service can transition to in-person-first without mid-contract obligation.
@@ -243,39 +264,88 @@ Do not:
 
 **Tier blueprint**:
 
-| Tier | Monthly price | Included services | Retail value | Savings |
+| Tier | Monthly price | Included services | Retail value | Member pays (% of retail) |
 |---|---|---|---|---|
-| Renew | $89/mo | 1 × 60-min Swedish massage/mo | $110 | 19% |
-| Restore | $149/mo | 1 × 90-min deep tissue or custom facial/mo + 10% off retail | $145 + retail | 20–25% |
-| Radiance | $229/mo | 1 × 90-min treatment + 1 × add-on (choice of back facial, scalp ritual, or CBD enhancement) + priority booking window + birthday upgrade | $235+ | 22% + perks |
+| Renew | $85/mo | 1 × 60-min Swedish massage/mo | $110 | **77%** — in band |
+| Restore | $139/mo | 1 × 90-min deep tissue ($145) **or** custom facial ($120)/mo + 10% off retail **and 10% off any additional services** | $120–$145 + discounts | **96% of retail if they take the deep tissue — but 116% if they take the $120 facial.** Out of band either way; see note |
+| Radiance | $229/mo | 1 × 90-min treatment + 1 × add-on (back facial, scalp ritual, or CBD enhancement) + priority booking window + birthday upgrade | $235+ | **97% on services alone** — out of band; the perks are the product |
 
-**Breakeven model (mid-tier: Restore at $149/mo):**
+**Note on the top two tiers, stated plainly rather than buried:** Renew clears the 70–80% rule at **$85 / $110 = 77%**. Restore and Radiance **do not** — on services alone the member pays ~96–97% of retail, which is barely a discount at all.
 
-| Visits/month | Member monthly revenue | Non-member equivalent revenue | Margin better than non-member? |
+**And watch the "or" in an included-service list — it is a margin trap.** Restore includes "deep tissue **or** custom facial," but those services are not the same price ($145 vs. $120). A member who always picks the **cheaper** option pays **$139 for $120 of service — 116% of retail, a premium** — and will eventually notice. **A tier priced against the most expensive item in an "or" list is mispriced against every other item in it.** Fix it one of three ways: price the tier against the **lowest**-value option in the list, restrict the tier to a single service, or make the higher-value service a paid upgrade ("deep tissue for +$20"). Never let an "or" quietly span a $25 price spread. That is a real finding about this service mix, not a math error to hide: at a $145 single service, one included treatment a month cannot fund a 20% discount *and* hold spa margin. So these tiers must be **sold on what they actually deliver** — priority booking, the 10% retail discount, the birthday upgrade, the banked-visit certainty — and **not** advertised with a "save 22%" claim the numbers do not support. If the practice wants a genuine 70–80% tier at the top, it has to include a *second* service (which costs treatment-room time it may not have) or raise retail prices. Decide which, explicitly, before launch. *(A membership advertised as "20–25% savings" that in fact charges 103% of retail is the single fastest way to lose a member's trust — and it is the error the first client to do the arithmetic will find.)*
+
+**Breakeven model (mid-tier: Restore at $139/mo):**
+
+Every row shows its arithmetic — an owner cannot defend a price they cannot re-derive.
+
+| Visits/month | Member pays the practice | Same consumption at retail | Read |
 |---|---|---|---|
-| 0.8 | $149 | $116 | Yes — pre-paid regardless |
-| 1.0 | $149 | $145 | Yes — pre-paid + predictable |
-| 1.5 | $149 + $72.50 in add-ons | $217.50 | Slightly lower per-visit avg; higher visit total |
-| 2.0 | $149 + $145 add-on (member rate) | $290 | Lower per-visit; substantially higher total |
+| 0.8 | $139 (pre-paid regardless of whether they show) | 0.8 × $145 = **$116** | Member is **ahead** for the practice: you keep $139 for $116 of delivered service. This is the month that funds the program. |
+| 1.0 | $139 | 1.0 × $145 = **$145** | Roughly a wash on revenue (−$6), but **predictable and already collected**. This is the design case. |
+| 1.5 | $139 + a half-visit at the 10%-off member service rate (0.5 × $130.50 = $65.25) = **$204.25** | 1.5 × $145 = **$217.50** | Member pays $13.25 less; you gain a booked visit and the retail attachment that comes with it. |
+| 2.0 | $139 + second visit at the member service rate ($130.50) = **$269.50** | 2 × $145 = **$290** | Member pays $20.50 less than retail — **but your delivery cost has doubled.** At two visits/month this tier is only worth having if the second visit fills a slot that would otherwise sit empty. If your rooms are full, you are discounting demand you already had. |
 
-**MRR forecast (50 starting members, Restore mid-tier @ $149/mo):**
+*(The 10%-off-additional-services benefit is why the member rate on a second $145 treatment is $130.50. Note that the tier must actually **grant** that benefit for this model to hold — a tier that discounts only retail **product** cannot be modeled as if it discounts services. Check that your tier text and your breakeven are describing the same program; they frequently aren't, and the gap shows up as a margin surprise in month four.)*
+
+**MRR forecast (50 starting members, Restore @ $139/mo, monthly churn compounding from month 1):**
+
+Active members in month *n* = 50 × (1 − churn)^(n−1). MRR = active members × $139.
 
 | Month | 3% churn | 7% churn | 12% churn |
 |---|---|---|---|
-| 1 | $7,450 | $7,450 | $7,450 |
-| 3 | $6,895 | $6,060 | $5,098 |
-| 6 | $6,356 | $4,914 | $3,450 |
-| 12 | $5,395 | $3,218 | $1,593 |
+| 1 | 50.0 → **$6,950** | 50.0 → **$6,950** | 50.0 → **$6,950** |
+| 3 | 47.0 → **$6,539** | 43.2 → **$6,011** | 38.7 → **$5,382** |
+| 6 | 42.9 → **$5,968** | 34.8 → **$4,835** | 26.4 → **$3,668** |
+| 12 | 35.8 → **$4,971** | 22.5 → **$3,128** | 12.3 → **$1,703** |
 
-The 7% vs. 3% churn difference costs the practice ~$2,177/mo by month 12. At 50 members, a single percentage-point improvement in churn is worth ~$436/mo.
+By month 12 the 3%-churn program is running at **$4,971/mo** and the 7%-churn program at **$3,128/mo** — a gap of **~$1,843/mo**, or roughly **$460/mo for each churn point** across that 4-point spread. The 12% program has lost **three quarters of its members** and is barely worth administering. **This table, not the enrollment number, is the argument for the churn-reduction playbook** — a membership program is won or lost after the sale, not at it.
 
-**Enrollment SMS**: "The Ritual Pass is here — 1 massage or facial every month from $89. Text RITUAL to [number] or ask at checkout. Reply STOP to opt out."
+**Enrollment SMS**: "The Ritual Pass is here — 1 massage or facial every month from $85. Text RITUAL to 55512 or ask at checkout. Reply STOP to opt out." *(55512 = the practice's real short code from `config.yml.tools` — never ship this line with a bracketed placeholder in it.)*
 
 **Cancellation policy note**: 30 days written notice required; 1 pause month per 12 months allowed; month-of-cancellation credit is non-refundable but valid for 60 days. Feed to `cancellation-no-show-policy-author` as the membership carve-out paragraph.
 
+## Worked Example — Fast-Path Mode (three inputs, no config)
+
+**What the owner said, in full**: *"I run a hair salon. Cut is $65, single-process color is $110, balayage is $240. No idea what my average ticket is."*
+
+That is enough. Mode: **Fast-Path**. One assumption made, stated below; no follow-up questions asked.
+
+**Program Summary**
+A two-tier monthly membership built on your color book, not your cut book. Cuts are too cheap to anchor a membership (a $65 service cannot carry a monthly fee that feels meaningful), and balayage is too infrequent to be a monthly inclusion. Single-process color is the cadence service — it recurs on a 4–6 week rhythm that maps naturally onto a monthly charge. Two tiers, because at three services you do not yet have the menu depth to justify a third.
+
+**Tier Blueprint**
+
+| Tier | Monthly price | Included | Retail value | Member pays |
+|---|---|---|---|---|
+| **The Chair** | $59/mo | 1 × cut every month, 15% off all color and retail | $65 + discounts | Member pays **91%** of retail on the cut alone |
+| **Color Club** | $89/mo | 1 × single-process color every month (cut add-on at $35, member rate), 15% off retail | $110 | Member pays **81%** of retail |
+
+**Read the pricing honestly — both tiers sit above the 70–80% rule, and you should know that before you launch them.** The rule (Pricing Discipline #2) says a member should pay 70–80% of retail. The Chair is at **91%** and Color Club at **81%** — Color Club is a whisker over, The Chair is well over. This is not a rounding error and it is not hidden: at a $65 cut, there is simply not enough retail value in a single monthly service to fund a compelling discount *and* hold margin. The honest options are (a) accept that **The Chair's value lives in the 15% off color and retail, not in the cut** — which is defensible, but it means the pitch must lead with the discount and not the "free" cut, or (b) add a second service to The Chair (a monthly blowout, a treatment) to pull the retail value up and the percentage down into band, which costs chair time you may not have. **Do not paper over this by quietly relabeling 91% as "savings."** Decide which option you want, out loud, before the first client enrolls. Color Club at 81% is close enough to band to launch as-is.
+
+**Breakeven (Color Club @ $89/mo — the tier the program is actually built on)**
+Cost-of-delivery on a single-process color: stylist time + back-bar color. If your loaded cost is roughly $45, the tier holds **(89 − 45) / 89 ≈ 49% margin** at one visit/month, which clears the 40–55% service-margin target. **It goes underwater the moment a member takes color twice in a month**: 2 × $45 = **$90** of delivery cost against **$89** of revenue. So the tier language must say "**one** color service per month," not "your color, covered" — that phrasing is the difference between a program that works and one that loses money on its best customers.
+
+*(Two tiers, so there is no mid-tier: run the breakeven on the tier the program is built on — here the top one. In a three-tier program, run it on the mid-tier, which is where the members concentrate.)*
+
+**In-chair pitch (30 sec, read this aloud today)**
+"Since you're in every five or six weeks anyway — we just started Color Club. It's $89 a month, covers your single-process, and takes 15% off anything you take home. If you're coming in that often, you're basically paying less than you do now. Want me to set it up at checkout?"
+
+**Enrollment SMS**
+"Color Club is here — your monthly color for $89/mo, plus 15% off retail. Ask at checkout or reply INFO. Reply STOP to opt out."
+
+**Gaps block — what to come back with**
+1. **Average ticket and visit frequency.** *Assumption made, and it is an assumption, not a benchmark: I priced these tiers directly off the three service prices you gave me, and assumed a client who comes in roughly every 5–6 weeks for color. I have **no industry figure for your average ticket** and did not invent one — the reference table in this skill doesn't carry that number, and a made-up "typical average ticket" is worse than an admitted gap.* Every price above moves if your real figures differ. Pull the last 90 days from your POS; it is a two-minute report.
+2. **Your loaded cost-of-delivery on single-process color** (stylist pay + back-bar). The $45 above is a placeholder. If it's $60, Color Club is priced wrong today.
+3. **Your state**, for the refund-grace-window language before you take a single payment.
+4. **Whether your platform does recurring billing.** If it doesn't, this program cannot launch as designed, and that is the first thing to solve.
+
+Come back with items 1 and 2 and this becomes a Standard run: MRR forecast, churn playbook, launch plan.
+
+*(Contrast this with "The Ritual Pass" Standard-mode example above, which had a full data pack behind it and could therefore carry an MRR forecast and a churn model. Fast-Path deliberately does not fake those — a forecast built on an assumed average ticket is a number that looks like knowledge and isn't.)*
+
 ## Inputs / Outputs Summary
 
-- **Inputs:** business profile, service mix, current average ticket + visit frequency, MRR goal, model preference, platform billing capability, brand voice, output preference.
+- **Inputs:** business profile, service mix, current average ticket + visit frequency, MRR goal, model preference, platform billing capability, brand voice, output preference. (**Fast-Path: business type + top 3 services with prices + average ticket, or a stated "I don't know."**)
 - **Outputs:** program summary, tier blueprint, breakeven model, MRR forecast table, cancellation & pause policy block, loyalty integration note, enrollment copy (3 touchpoints), churn-reduction playbook, launch plan, KPI dashboard (extended), compliance checklist (med spa + extended).
 
 ## Review Before Publishing
@@ -287,3 +357,14 @@ The 7% vs. 3% churn difference costs the practice ~$2,177/mo by month 12. At 50 
 - `operations/cancellation-no-show-policy-author`: run together before publishing so the membership carve-out paragraph and the main cancellation policy are consistent.
 
 This skill produces a first draft. Final launch requires the practice's professional advisors and a platform billing test run.
+
+## Version History
+- **1.2** (2026-07-13) — Added the **Fast-Path / Standard / Extended** mode structure (matching `loyalty-program-builder` and `referral-program-builder`), with Fast-Path as the default: three inputs, at most one follow-up question, and a Gaps block that names exactly what to come back with. The skill previously degraded hard on day one — an owner without `config.yml`, a known average ticket, and a service-cadence map had to survive an eight-item intake before seeing anything, which is the wrong shape for the moment an owner is still deciding whether a membership is even for them. Added a **Fast-Path worked example** (hair salon, three services, no config, no known average ticket) that runs the whole mode end to end, including the honest assumption disclosure. Corrected two credibility defects: the **Industry Reference Benchmark table** is now explicitly framed as directional bands composited from non-comparable vendor/trade sources, never to be quoted to an owner, a lender, or a client; and the fabricated **"exit surveys typically reveal 60–70% of churn is scheduling-related"** figure is struck, replaced with the qualitative point that actually mattered (owners default to a price diagnosis and discount when the fix is often capacity) plus an instruction to collect the practice's own split. `efficiency` 6 → 8, `industry_fit` restored.
+  - **This edit was corrective, not purely additive** — and the corrections were mostly *arithmetic in the worked examples*, which is a humbling thing for a skill whose entire job is pricing. Caught in the same cycle's verification pass and fixed:
+    - **"The Ritual Pass" tier table advertised "20–25% savings" on tiers where the member actually paid 96–103% of retail.** Restore was $149/mo against a $145 service — a *premium*, labeled as a discount. Radiance showed "22%" against a true 2.6%. Re-priced Restore to $139 and replaced the "Savings" column with an honest **"member pays % of retail"** column, with an explicit note that the top two tiers sit *outside* the skill's own 70–80% rule and must therefore be sold on perks, priority booking, and predictability rather than on a savings claim the numbers do not support. A membership advertised as "save 22%" that charges 103% of retail is the fastest way to lose a member's trust, and the first client to do the arithmetic will find it.
+    - **The MRR forecast columns didn't match their own churn rates**, and the "$436/mo per churn point" figure divided a 4-point spread by 5. Rebuilt every cell from `50 × (1 − churn)^(n−1)`, with the formula shown so an owner can re-run it.
+    - **The churn-modeling rule mis-stated its own example** (50 × 0.93^12 ≈ 19; it is ≈ 21) and compounded from the wrong month. Corrected, with the off-by-one exponent error called out explicitly since it is the most common spreadsheet mistake here.
+    - **The Fast-Path example's first draft claimed 81% was "inside the 70–80% rule."** It is not. Fixed, and turned into the honest finding it should always have been.
+    - **Struck the "California B&P § 8599" citation.** That code range is the Structural Pest Control Act, not health-studio contracts — an authoritative-looking wrong cite, in a skill that elsewhere tells the reader never to quote a statute verbatim. Now cited by category and routed to counsel, per the skill's own rule.
+    - **Removed** the superseded "brief" output-preference option (folded into Fast-Path).
+- **1.1** — Config Integration table (8 keys), 2026 industry reference benchmarks, med-spa compliance hook, loyalty integration rule, routing map.

@@ -4,8 +4,8 @@ category: sales
 tools: [claude, chatgpt]
 difficulty: intermediate
 time_saved: "~20 min/campaign"
-version: 2.1
-last_eval_score: 9.2
+version: 2.2
+last_eval_score: 9.3
 ---
 
 # SMS & WhatsApp Marketing Campaign Builder
@@ -52,6 +52,7 @@ Load business details from `config.yml` and reference `knowledge-base/terminolog
 | `staff.roster[]` | Provider attribution ("Jen has openings…") | "the team" |
 | `compliance.regulated_language` | Med-spa / clinical required language; suppress prescription-product names from promotional copy | omit (non-clinical business) |
 | `loyalty.tier_names` | VIP / top-tier campaign segmentation | "VIP" |
+| `business.location.state` (may be a list) | Fires the CA AB-489 recurring-template gate and the **State Telemarketing Registration** gate (TX SB 140 seller registration for TX SMS programs); also the state(s) the program texts into | ask once if any SMS marketing is planned; do **not** guess — the registration exposure turns on it |
 
 If a required config key is missing for the campaign type, flag it in the deliverable's "Notes for sender" rather than inventing.
 
@@ -135,6 +136,20 @@ For any CA-state campaign touching a clinical-tier service (`compliance.regulate
 
 When a template trips the gate, route it through `operations/ai-consent-and-compliance-guardrails` Review Checklist item 9 and hold for medical-director sign-off before scheduling. Add the result to the deliverable's Compliance handoff note.
 
+### State Telemarketing Registration — When an SMS Program Itself Triggers Seller Registration (independent of AI, independent of content)
+
+This gate is different in kind from everything above: it does not care what the message *says* or whether AI drafted it. Some state telemarketing statutes now reach **text messages** and can require the **business itself to register as a seller/telephone solicitor** before it runs an SMS marketing program at all. A perfectly compliant, human-written, opt-in-respecting campaign can still be unlawful if the *sender* never registered.
+
+**Texas SB 140 (effective 2025-09-01)** is the live example the KB tracks. It expands the Texas Telephone Solicitation Act to cover **text, graphic, and image messages**, and requires a covered seller to **register with the Texas Secretary of State** (registration fee, surety bond, periodic reports). Enforcement includes a **DTPA private right of action** reported at up to **$1,500 per violation plus treble damages** — and "per violation" on a broadcast list scales the way the AB-489 automation multiplier does. **This is a telemarketing law, not an AI law** (do not conflate the two — an earlier draft of the regulations KB wrongly described SB 140 as an AI-voice-disclosure rule; it contains no AI provision). Practical read: **any Texas salon or spa running SMS marketing is potentially a covered telephone solicitor and may owe registration.**
+
+When to fire this gate:
+
+- **Fires when `business.location.state` includes TX** (or the practice sends marketing SMS into TX numbers). Surface a **hard flag in Notes for sender**: "TX SMS marketing may require Texas Secretary of State telephone-solicitor registration (SB 140) — confirm registration/exemption **with counsel before the first send**. This is a business-registration question, not a copy question; this skill cannot clear it."
+- **Do not attempt to determine whether an exemption applies** (there are exemptions, and they are fact-specific to the practice's structure and history). Route to counsel — this skill flags the exposure and stops.
+- **Other states:** several states run telephone-solicitation/telemarketer registration regimes, and coverage of text is expanding. Do not enumerate or invent specifics for states the KB does not track — instead, when the practice operates in or texts into a state outside the ones this repo covers, add a one-line generic flag: "Confirm whether [state] requires seller/telemarketer registration for SMS marketing before launching a recurring program." Name a specific statute and dollar figure **only** for TX (SB 140), which the KB verifies; for everything else, flag-and-route without numbers.
+
+This gate is a **launch-blocker for the program**, not a per-message edit: it is checked once before an SMS marketing program goes live in a covered state, and re-checked if the practice adds a new state. See `knowledge-base/regulations/state-by-state-med-spa-2026.md` (Texas entry) for the tracked detail.
+
 ### When Another Skill Owns This Job
 
 | If the campaign is actually… | Use this skill instead |
@@ -159,7 +174,7 @@ For each campaign, provide:
 - **Follow-up message** (optional, for 3–5 days later if no response)
 - **Image suggestion** (for WhatsApp — describe the photo or graphic concept; include button labels for any quick-reply buttons)
 - **Compliance handoff note** referencing the `ai-consent-and-compliance-guardrails` Review Checklist items that apply (marketing-authorization on file, regulated-language filter, WhatsApp template-approval status — and, for any CA clinical-tier recurring/automated template, the AB-489 restricted-term gate at Review Checklist item 9, with the automation-multiplier caution flagged)
-- **Notes for sender** — segment-count check result, any 2-segment flag, missing config keys to confirm before send
+- **Notes for sender** — segment-count check result, any 2-segment flag, missing config keys to confirm before send, and — for any program in or texting into TX (or another registration state) — the **State Telemarketing Registration launch-blocker flag** (TX SB 140 Secretary-of-State seller registration; confirm with counsel before first send)
 
 ## Example Outputs
 
@@ -281,5 +296,6 @@ A small token: priority access to Jen's calendar this fall before we open public
 
 ## Version History
 
+- **v2.2** (2026-07-20, skill-evaluator) — Added the **State Telemarketing Registration gate** (TX SB 140), closing the monitor hand-off carried since 2026-07-13. This gate is different in kind from every other compliance block in the skill: it does not care what the message says or whether AI drafted it — some state telemarketing statutes now reach **text messages** and can require the **business itself to register as a seller/telephone solicitor** before running any SMS marketing program. TX SB 140 (effective 2025-09-01) is the tracked example: it extends the Texas Telephone Solicitation Act to text/graphic/image messages, requires Texas Secretary-of-State registration (fee + surety bond + periodic reports), and carries DTPA private-right-of-action exposure up to $1,500/violation plus treble damages. The gate fires on `business.location.state` including TX (or texting into TX), surfaces a **launch-blocker flag** routing to counsel, and — critically — is framed as a **telemarketing, not AI, rule** (an earlier regulations-KB draft wrongly called SB 140 an AI-voice-disclosure law; that error is not repeated here). For non-TX states the KB does not track, the skill flags-and-routes generically **without inventing statutes or dollar figures** — a specific citation and number are given only for TX, which the KB verifies. Added a `business.location.state` config row and wired the flag into the Output Format "Notes for sender." Additive only; no prior content changed.
 - **v2.1** — Added the **CA AB-489 Restricted-Term Gate for Recurring / Automated Templates** per the 2026-06-08 monitor hand-off. SMS templates run as standing automations (birthday, off-peak, visit-iversary, seasonal), so a single license-implication term re-fires per send and each use is a separate AB-489 violation — the automation multiplier is the specific risk. The new section runs the restricted-term checklist on CA clinical-tier templates before they enter an automation and routes a tripped template to `ai-consent-and-compliance-guardrails` Review Checklist item 9; the Output Format compliance-handoff note now surfaces it. Additive only — the Config Integration table, Channel Economics, Segmentation Recipes, and Message Construction Rules are unchanged.
 - **v2.0** — Config Integration table, Channel Economics (SMS vs. WhatsApp), Segmentation Recipes, segment-counting and send-window discipline, three worked examples.

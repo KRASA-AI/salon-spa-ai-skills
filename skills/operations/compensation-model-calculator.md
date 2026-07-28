@@ -4,8 +4,8 @@ category: operations
 tools: [claude, chatgpt]
 difficulty: intermediate
 time_saved: "~90 min/decision"
-version: 1.1
-last_eval_score: null
+version: 1.2
+last_eval_score: 8.8
 ---
 
 # Compensation Model Calculator
@@ -118,6 +118,25 @@ Show stylist take-home both **gross** (pre-tax) and **net** (post-tax). The post
 
 The net-take-home line is what the stylist actually compares. The gross-take-home line is what the recruiter / pitch deck quotes. Always show both, in that order, with the gross marked "(pre-tax)" so the comparison cannot be misread.
 
+### Arithmetic-Trail Discipline
+
+Every net-take-home, owner-margin, and breakeven figure in the output must be **verifiable by the reader without a spreadsheet**. The owner is being asked to move people's pay based on these numbers — a bare "$32,108" they cannot reproduce is a number they cannot defend to their team or their CPA. So show the trail.
+
+For each net-take-home figure, append a one-line derivation directly beneath the table (a compact footnote is fine), stepping from gross to net in the order the deductions apply:
+
+> *Commission 50/50 net: $90,000 rev × 50% split = $45,000 gross − $3,443 employee FICA (7.65%) − $9,450 income tax (22% fed + 5% MA on $45,000) = **$32,108**.*
+
+> *Booth $475/wk net: $90,000 rev − $24,700 rent ($475 × 52) − $7,200 supplies (8%) − $2,000 platform (3.5%) − $1,500 tools = $54,600 net business income; − $7,716 SE tax (15.3% × $50,742, i.e. net × 0.9235) − $13,650 income tax (27% on $50,742 after ½-SE-tax deduction) + $2,184 QBI benefit = **$35,418**.*
+
+Rules for the trail:
+- State every rate as a percentage **and** the dollar amount it produces, so the reader can check both the rate and the multiplication.
+- Show the SE-tax base as `net × 0.9235` (the 92.35% adjustment) rather than applying 15.3% to raw net — this is the single most common error in DIY comp spreadsheets, and showing it lets the owner catch a CPA who skipped it.
+- For each breakeven, show the equation that sets the two models equal — e.g., *"booth net = commission net when `rev × 0.50 − tax` equals `rev − rent − supplies − platform − SE − tax`; solving gives rev ≈ $87,500/yr."* Don't just assert the crossover number; show what was set equal to produce it.
+- Round only the final figure to the dollar; carry cents internally so the trail reconciles.
+- If a figure depends on a fallback assumption (a state rate, a supply %), name the assumption in the trail so the owner sees exactly which input to swap.
+
+This trail is what converts the calculator from "trust me" to "check me," and it is what lets the owner hand the page to their CPA and get a fast yes/no instead of a re-model.
+
 ### Owner-Side Margin Discipline
 
 For the owner, compute **margin per chair** under each model. The four cost layers an owner pays out of the service-revenue dollar are:
@@ -152,6 +171,8 @@ Produce the calculator output with these sections, in this order. Adjust depth t
 2. **Stylist-side comparison table** (if vantage point includes stylist) — for each model under comparison, at low / mid / stretch revenue:
 
    | Model | Annual service rev | Gross take-home (pre-tax) | Federal + state tax | SE tax | QBI deduction | **Net take-home** |
+
+   Directly beneath the table, add the **arithmetic trail** (see Arithmetic-Trail Discipline) for at least the mid scenario of each model — a one-line gross-to-net derivation with every rate and its dollar amount shown, so the owner can reproduce each net figure without a spreadsheet.
 
 3. **Owner-side comparison table** (if vantage point includes owner) — for each model under comparison, at low / mid / stretch revenue per chair:
 
@@ -214,6 +235,10 @@ Stylist A (5 years, senior column) at Salon X is asking to switch from the salon
 | Booth $475/wk — low scenario ($60k rev) | $60,000 | $24,600 net biz income | $4,920 (20% effective) | $3,478 (SE) | −$984 (QBI) | **$17,186** |
 | Booth $475/wk — stretch scenario ($120k rev) | $120,000 | $84,600 net biz income | $19,458 (24% effective) | $11,956 (SE) | −$3,384 (QBI) | **$56,570** |
 
+*Arithmetic trail (mid scenario):*
+- *Commission 50/50 net: $90,000 × 50% = $45,000 gross − $3,443 employee FICA (7.65% × $45,000) − $9,450 income tax (22% fed + 5% MA = 27% × $35,000 taxable after standard deduction band, rounded) = **$32,108**.*
+- *Booth $475/wk net: $90,000 − $24,700 rent ($475 × 52) − $7,200 supplies (8%) − $2,000 platform (3.5%) − $1,500 tools = $54,600 net business income. SE tax = 15.3% × ($54,600 × 0.9235) = 15.3% × $50,423 = **$7,716**. Income tax = 27% × ($54,600 − $3,858 half-SE deduction − QBI room) ≈ **$13,650**. QBI benefit ≈ 20% × $10,920 qualified room = **+$2,184**. Net = $54,600 − $7,716 − $13,650 + $2,184 = **$35,418**.*
+
 **Owner-side comparison table** (per chair, monthly)
 
 | Model | Service rev | Stylist comp + payroll tax | Supply | Processing | Chair overhead | Rent in | **Owner margin** |
@@ -222,7 +247,7 @@ Stylist A (5 years, senior column) at Salon X is asking to switch from the salon
 | Booth $475/wk — Stylist A at mid | n/a (no service rev to owner) | $0 | $0 | $0 | $850 | $2,058 | **$1,208 / mo** |
 
 **Breakevens**
-- **Stylist-side**: take-home crosses over at roughly **$87,500 / year service revenue** (~$7,300 / month). Stylist A is projected at $7,500 / month — slightly above the crossover, so the booth model nets her about $3,310 more per year at her current run-rate. At the low scenario ($60k), commission wins by $5,119. At the stretch scenario ($120k), booth wins by $16,160. Stylist A is sitting near the line — directionally booth wins, but a bad month or two flips it.
+- **Stylist-side**: crossover is where booth net = commission net — i.e. where `rev − rent − supplies − platform − tools − SE − tax` equals `rev × 0.50 − FICA − tax`. Substituting the fixed booth costs ($24,700 + 8% + 3.5% + $1,500) and solving for rev gives roughly **$87,500 / year service revenue** (~$7,300 / month). Stylist A is projected at $7,500 / month — slightly above the crossover, so the booth model nets her about $3,310 more per year at her current run-rate. At the low scenario ($60k), commission wins by $5,119. At the stretch scenario ($120k), booth wins by $16,160. Stylist A is sitting near the line — directionally booth wins, but a bad month or two flips it.
 - **Owner-side**: per-chair margin under commission ($1,750 / mo at her revenue) exceeds per-chair margin under the proposed booth rent ($1,208 / mo) by roughly **$542 / month**. The salon would lose ~$6,500 / year on this single chair if the switch is made — unless that chair otherwise sits empty (in which case booth rent at $2,058 / month beats $0).
 
 **Recommendation paragraph**

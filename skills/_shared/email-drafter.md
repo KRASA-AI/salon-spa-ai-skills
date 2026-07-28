@@ -5,7 +5,7 @@ tools: [claude, chatgpt]
 difficulty: beginner
 time_saved: "~15 min/email"
 version: 2.2
-last_eval_score: 8.9
+last_eval_score: 9.3
 ---
 
 # Salon & Spa Email Drafter
