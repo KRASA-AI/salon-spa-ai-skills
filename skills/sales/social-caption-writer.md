@@ -4,8 +4,8 @@ category: sales
 tools: [claude, chatgpt]
 difficulty: intermediate
 time_saved: "~10 min/post"
-version: 2.3
-last_eval_score: 9.2
+version: 2.4
+last_eval_score: 9.1
 ---
 
 # Social Media Caption Writer
@@ -218,13 +218,14 @@ Our colorist Mia used a combination of babylights through the crown and a hand-p
 
 The best part? This look grows out beautifully — next touch-up isn't for another 12 weeks.
 
-[Salon Name] · [City]
+Radiance Salon & Spa · Denver
+
 Colorist: Mia
 
 Save this for your next color inspo · Book your consultation via link in bio.
 
 **Hashtag Set:**
-#BalayageTransformation #LivedInBlonde #DimensionalColor #AshBlonde #ColorCorrection #BabylightsAndBalayage #HairColorSpecialist #SalonTransformation #BlondeBalayage #HairGoals #[City]Salon #[City]Colorist #[SalonName] #HairInspo #BeforeAndAfterHair
+#BalayageTransformation #LivedInBlonde #DimensionalColor #AshBlonde #ColorCorrection #BabylightsAndBalayage #HairColorSpecialist #SalonTransformation #BlondeBalayage #HairGoals #DenverSalon #DenverColorist #RadianceSalonSpa #HairInspo #BeforeAndAfterHair
 
 **CTA Type:** Booking (consultation)
 **Best Posting Time:** Tuesday or Wednesday, 11 AM-1 PM
@@ -241,7 +242,7 @@ Babylights + hand-painted balayage + ash-beige gloss = 12 weeks between appointm
 
 Book with Mia — link in bio.
 
-#BalayageTransformation #HairTok #ColorCorrection #[City]Salon
+#BalayageTransformation #HairTok #ColorCorrection #DenverSalon
 
 **CTA Type:** Booking
 **Best Posting Time:** Thursday or Friday, 7-9 PM
@@ -251,5 +252,6 @@ Book with Mia — link in bio.
 
 ## Version History
 
+- **v2.4** — Resolved the bracket-token defect in the worked example: the Instagram Feed caption's sign-off (`[Salon Name] · [City]`) and hashtag set (`#[City]Salon #[City]Colorist #[SalonName]`), plus the TikTok caption's hashtag (`#[City]Salon`), shipped live placeholder tokens — directly contradicting this skill's own Branded Hashtag Auto-Build rule (line 78: a caption with `[City]` placeholders "is the #1 published-with-typo failure mode for this skill"). Replaced with a concrete worked business (Radiance Salon & Spa, Denver) — the same example business used in `sales/social-content-calendar-planner`, and the same city already implied by this skill's own hashtag examples (`#DenverColorist`, `#DenverInjector`). No rule, gate, or config-mapping content changed.
 - **v2.3** — Added the **CA AB-489 Restricted-Term Gate for Standing Copy** per the 2026-06-08 monitor hand-off. Captions are evergreen, crawlable copy and a documented board "crawler-audit" target; the new section runs the license-implication restricted-term checklist ("doctor-level," "MD-formulated," "our medical experts recommend," credential lookalikes, white-coat asset motifs) on CA clinical-tier captions, treats each restricted term as a separate compounding violation, and routes a tripped caption to `ai-consent-and-compliance-guardrails` Review Checklist item 9 for medical-director sign-off. Additive only — the existing Med-Spa Compliance Hook, Voice-Fingerprint, Staff-Roster Resolver, and platform rules are unchanged.
 - **v2.2** — Config Integration table, Voice-Fingerprint Application, Branded Hashtag Auto-Build, Staff-Roster Resolver, 2026 Trend-Cue Library, Algorithmic-Fit Checklist, Carousel-vs-Reel matrix.

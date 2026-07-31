@@ -5,7 +5,7 @@ tools: [claude, chatgpt]
 difficulty: beginner
 time_saved: "~15 min/use"
 version: 1.1
-last_eval_score: 8.1
+last_eval_score: 9.1
 ---
 
 # Client Consultation Intake

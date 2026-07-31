@@ -5,7 +5,7 @@ tools: [claude, chatgpt]
 difficulty: intermediate
 time_saved: "~8 min/client"
 version: 2.1
-last_eval_score: 9.2
+last_eval_score: 9.6
 ---
 
 # Client Consultation Notes

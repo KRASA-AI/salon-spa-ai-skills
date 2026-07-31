@@ -4,8 +4,8 @@ category: operations
 tools: [claude, chatgpt]
 difficulty: intermediate
 time_saved: "~2 hr/policy refresh"
-version: 1.1
-last_eval_score: null
+version: 1.2
+last_eval_score: 8.8
 ---
 
 # Cancellation, No-Show & Deposit Policy Author
@@ -72,11 +72,13 @@ If a required config key is missing, write the draft policy anyway and surface t
 
 Use these as the at-typical reference when the practice's own benchmarks are not provided. Mark them as "industry reference" in the rationale section, not as the practice's own numbers.
 
+**Read the rate rows as directional bands, not measurements.** They are composited from vendor and trade-press reporting whose methodologies are not comparable and whose samples skew toward practices already running booking software with no-show tracking. They are useful for *sizing* a strictness recommendation — is this practice's rate roughly typical, elevated, or low for its category? — and useless as a claim. Never present a figure from this table to an owner as a fact about their business, never cite it in the canonical client-facing policy text, and never use it to justify a fee in a client-facing dispute. Once the practice has 90 days of its own no-show / late-cancel data, that data supersedes every row here and drives the Strictness Band Rule directly.
+
 | Input | Salon (hair / nail) | Day spa (massage / facial) | Med spa (laser / neuromod / filler) |
 |---|---|---|---|
 | Cancellation notice window | 24 hours | 24–48 hours | 48–72 hours |
-| No-show rate (industry typical, 2026) | ~8% | ~10% | ~16% |
-| Late-cancel rate (industry typical, 2026) | ~3% (within window) | ~4% | ~5% |
+| No-show rate (directional band, non-comparable sources) | ~8% | ~10% | ~16% |
+| Late-cancel rate (directional band, non-comparable sources) | ~3% (within window) | ~4% | ~5% |
 | Standard deposit (% of service ticket) | 15–25% | 20–30% | 25–50% |
 | Bridal / event / package deposit | 25–35% non-refundable | 25–35% non-refundable | n/a (typically not bridal-aligned) |
 | Late-arrival grace window | 10–15 min | 10 min | 5–10 min (clinical scheduling) |
@@ -239,3 +241,8 @@ Service mix: cuts ($65, 45 min) / color & balayage ($180–$280, 2–3 hr) / las
 - Front-desk lead to verify the talking-point card sounds like the team and not like the policy paper.
 
 This skill produces a first draft. Final publish requires the practice's professional advisors.
+
+## Version History
+
+- **v1.2** — Tightened the 2026 Industry Reference Fallback table's rate-row labels from "industry typical, 2026" to "directional band, non-comparable sources," matching the standard the 2026-07-13 `membership-program-builder` fix established for the same class of vendor/trade-press-composited figure. Added an explicit framing note above the table: these rates size a strictness recommendation, they are not a fact to cite to an owner, in client-facing policy text, or in a fee dispute. No rate value, band boundary, or downstream Strictness Band Rule logic changed — this is a labeling-precision fix, not a data change.
+- **v1.1** — (prior version; no changelog entry recorded for this bump)

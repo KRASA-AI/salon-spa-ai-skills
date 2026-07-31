@@ -4,8 +4,8 @@ category: customer-service
 tools: [claude, chatgpt]
 difficulty: intermediate
 time_saved: "~8 min/review"
-version: 2.1
-last_eval_score: 9.0
+version: 2.2
+last_eval_score: 9.2
 ---
 
 # Review Response Writer
@@ -132,9 +132,9 @@ For each review, return:
 **Response:**
 Sarah, thank you so much — we're so glad Maya could help get your blonde back to where you wanted it. Color corrections take time and a careful hand, and she's at her best when clients come in with a clear vision like you did. We'll pass this on to her and the whole team. See you next visit!
 
-— Alex, [Salon Name]
+— Alex, Radiance Salon & Spa
 
-**Character count:** 392
+**Character count:** 322
 **Internal follow-up:**
 - Share in Monday huddle — Maya recognized by name
 - Pre-book reminder for 10-week gloss already in her file
@@ -147,11 +147,11 @@ Sarah, thank you so much — we're so glad Maya could help get your blonde back 
 **Service:** Balayage
 
 **Response:**
-Priya, I'm sorry your visit didn't go the way you were hoping. When a client comes in with a reference, getting the tone right — and the estimate right — is exactly what the consultation is there for, and we clearly missed the mark on both. I'd like to make this right in person; please reach me directly at [owner email] or [salon phone] so we can talk through it and find the right next step.
+Priya, I'm sorry your visit didn't go the way you were hoping. When a client comes in with a reference, getting the tone right — and the estimate right — is exactly what the consultation is there for, and we clearly missed the mark on both. I'd like to make this right in person; please reach me directly at alex@radiancesalonspa.com or (617) 555-0148 so we can talk through it and find the right next step.
 
-— Alex, Owner, [Salon Name]
+— Alex, Owner, Radiance Salon & Spa
 
-**Character count:** 425
+**Character count:** 444
 **Internal follow-up:**
 - Flag Priya's booking record for provider review
 - Offer at next conversation: comp toner adjustment + transparent re-quote on next service
@@ -165,12 +165,20 @@ Priya, I'm sorry your visit didn't go the way you were hoping. When a client com
 **Service:** Signature facial
 
 **Response:**
-Hi Jordan, thank you for the honest feedback. A facial should feel unhurried from start to finish, and retail recommendations should feel like guidance, never pressure — neither of those happened the way they should have. I'd like to personally make this right. Please send me a message here on Yelp or reach me at [owner email], and we'll set it up.
+Hi Jordan, thank you for the honest feedback. A facial should feel unhurried from start to finish, and retail recommendations should feel like guidance, never pressure — neither of those happened the way they should have. I'd like to personally make this right. Please send me a message here on Yelp or reach me at alex@radiancesalonspa.com, and we'll set it up.
 
 — Alex
 
-**Character count:** 358
+**Character count:** 370
 **Internal follow-up:**
 - Private message Jordan on Yelp with offer to redo the service
 - Review room timing with esthetician; retail coaching for the team
 - No public offer of comp — handle only in DM
+
+---
+
+## Version History
+
+- **v2.2** — Resolved the bracket-token defect in the worked examples: Review 1's sign-off, Review 2's contact line, and Review 3's contact line shipped `[Salon Name]` / `[owner email]` / `[salon phone]` as if they were live posted-reply text — directly contradicting this skill's own Config Integration rule (line 56: a reply that ships with a bracket placeholder "does measurable, durable damage" to the search-result page). Replaced with a concrete worked business (Radiance Salon & Spa, owner Alex, alex@radiancesalonspa.com, (617) 555-0148) — the same example business used in `sales/social-content-calendar-planner`. Character counts recalculated against the corrected text. No rule, playbook, or config-mapping content changed.
+- **v2.1** — (prior version; no changelog entry recorded for this bump)
+- **v2.0** — Explicit "When NOT to use this skill" boundary, handoff-signal list, and Handoff-recommended output routing 1–3-star / injury / dispute reviews to the full de-escalation framework; `_shared/review-responder` handles the 4–5-star fast path.

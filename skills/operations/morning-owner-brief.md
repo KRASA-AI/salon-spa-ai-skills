@@ -5,7 +5,7 @@ tools: [claude, chatgpt]
 difficulty: beginner
 time_saved: "~30 min/day"
 version: 1.1
-last_eval_score: 8.4
+last_eval_score: 8.9
 ---
 
 # Morning Owner Brief

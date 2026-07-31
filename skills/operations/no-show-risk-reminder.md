@@ -5,7 +5,7 @@ tools: [claude, chatgpt]
 difficulty: intermediate
 time_saved: "~20 min/day"
 version: 1.1
-last_eval_score: 8.4
+last_eval_score: 9.1
 ---
 
 # No-Show Risk Reminder
