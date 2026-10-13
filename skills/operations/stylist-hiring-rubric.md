@@ -4,8 +4,8 @@ category: operations
 tools: [claude, chatgpt]
 difficulty: intermediate
 time_saved: "~45 min/role + downstream rehire-cost avoidance"
-version: 1.0
-last_eval_score: null
+version: 1.1
+last_eval_score: 9.1
 ---
 
 # Stylist & Provider Hiring Rubric Builder
@@ -73,8 +73,10 @@ Before generating the rubric body, run these gates against `business.location.st
 | **CA AB-489 license-term gate** (effective 2026-01-01) | Practice is in California AND the draft job-posting copy block uses "doctor-level," "clinician-guided," "expert-backed," "MD-formulated," or similar implied-licensure phrases without the supervising-licensee's role spelled out. | Soft block on the posting-copy draft section only. The rubric body proceeds; the posting-copy block is replaced with a "rewrite with explicit licensed-supervisor naming per CA AB-489" instruction and a worked replacement example. |
 | **CO SB 26-189 AI-hiring-tool gate** (effective 2027-01-01; flag as forward-looking through 2026) | Practice is in Colorado AND is *not* HIPAA-covered AND the hiring workflow uses an automated decision-making technology to materially influence the hire/no-hire (e.g., an automated resume scorer that auto-rejects). | Soft block on the AI-screening-tool subsection only. Rubric body proceeds; the AI-screening subsection is replaced with a "review CO SB 26-189 deployer duties before deploying automated scoring; structured-rubric scoring by a human interviewer is unaffected" instruction. |
 | **NY / TX / OH ownership-and-protocol gate** | Practice is in NY, TX, or OH AND the role is a clinical scope role AND `compliance.medical_director` lacks the in-state physician name and the documented protocol reference. | Hard block. These states have active 2026 enforcement waves and the rubric must not publish a clinical role without naming the supervising physician and the on-file protocol. |
-| **NJ written-collaboration gate** | Practice is in NJ AND role is NP / PA injector AND `compliance.collaboration_agreement` is unset. | Hard block. Per the February 2026 NJ joint-rule, NP / PA injector roles require a written collaboration agreement; the rubric will not publish without it. |
-| **IA on-site-supervision gate** | Practice is in Iowa AND role is RN / LE under medical-director protocol AND `compliance.medical_director.on_site_hours_per_week` < 4 or `compliance.medical_director.distance_miles` > 60. | Hard block. Per HSB 591, the rubric will not publish a clinical role that cannot meet the 60-mile / 4-hour rule. |
+| **NJ collaboration-agreement flag** (PENDING RULE — not yet law) | Practice is in NJ AND role is NP / PA injector AND `compliance.collaboration_agreement` is unset. | **Soft flag, not a block.** The February 2026 NJ Board of Medical Examiners + Board of Pharmacy joint rule that would require written APN/PA collaboration agreements is a *proposal* (comment period closed 2026-05-05; adoption not confirmed — see `knowledge-base/regulations/state-by-state-med-spa-2026.md`). The rubric publishes, with a line in Artifact 1: "NJ proposed rule pending — have a written collaboration agreement drafted before the start date; confirm current status with counsel." Upgrade to a hard block only once the KB records the rule as adopted. |
+| **IA supervision flag** (PROPOSED BILL — not law) | Practice is in Iowa AND role is RN / LE under medical-director protocol. | **Soft flag, not a block.** Iowa HSB 591 (Medical Spa Oversight Act) was *not enacted* in the 2026 session (KB status: proposed). Do not cite any distance or on-site-hours threshold as a requirement. The rubric publishes with a line in Artifact 1: "Iowa med-spa oversight bill pending/refile risk — confirm current supervision rules with counsel before offering." Upgrade only if the KB records enactment. |
+
+**Status discipline.** A hard block is reserved for rules the KB records as *in force*. A proposed rule or unenacted bill produces a soft flag naming its status — blocking a hire on a rule that is not law costs the practice a candidate for nothing, and stating it as law in a candidate-facing artifact is a misstatement. When the KB status of any gate changes, the gate's tier changes with it.
 
 The gates always run before the body. The point is to never invite a candidate into a process that ends in "we can't actually hire for this scope here."
 
@@ -177,7 +179,7 @@ When the input or context suggests another skill owns the work, route rather tha
 | Offer letter, compensation model selection, or commission-vs-booth-vs-hourly comparison | `operations/compensation-model-calculator` |
 | 30 / 60 / 90 onboarding plan once the hire is made | `operations/staff-training-guide` |
 | Provider bio, "meet your new stylist" client-facing copy | `_shared/email-drafter` (warm-honest archetype, optionally followed by `sales/social-caption-writer` for the launch caption) |
-| Mid-tenure performance review (existing staff, not hiring) | Not in repo yet — return a "this skill is for hiring; the in-tenure-review skill is a v2026-Q3 candidate" note. |
+| Mid-tenure performance review (existing staff, not hiring) | Not in repo yet — return a "this skill is for hiring; an in-tenure performance-review skill is a queued candidate, not yet built" note. |
 | AI-disclosure for AI-drafted job posting copy | `operations/ai-consent-and-compliance-guardrails` (CA AB-489 plus general AI-disclosure rules) |
 | State-board scope, ownership, and supervision rules | `knowledge-base/regulations/state-by-state-med-spa-2026.md` (the rubric reads this; doesn't re-author it) |
 | Apprentice-to-chair internal promotion checklist | Run this same skill in reverse: use the rubric as the readiness instrument; pair with `operations/staff-training-guide` for the structured promotion plan. |
@@ -207,8 +209,8 @@ The skill will refuse to generate output that:
 - CA AB-489: not applicable (state = IL).
 - CO SB 26-189: not applicable (state = IL).
 - NY / TX / OH: not applicable.
-- NJ collaboration: not applicable.
-- IA supervision: not applicable.
+- NJ collaboration flag (pending rule): not applicable.
+- IA supervision flag (proposed bill): not applicable.
 - **All gates pass — proceed to rubric.**
 
 **Output artifacts (summarized; full output is the five artifacts above):**
@@ -239,6 +241,19 @@ Weighted grid as shown above for senior stylist / colorist (25 / 20 / 20 / 10 / 
 - Confirm portfolio request language does not require unpaid sample work (Illinois wage rules limit unpaid auditions).
 - Confirm references list excludes anyone with whom Field House has a non-solicit conflict.
 
+### Worked Example 2 (RN injector, med spa, Newark NJ — shows the gate tiers)
+
+**Input:** Role: RN injector (neuromodulators only), W-2 hourly + per-area commission, Wed–Sat. `config.yml`: `business.name = Lumen Aesthetics`, `business.business_type = med-spa`, `business.location.state = NJ`, `compliance.medical_director = Dr. Priya Nair (NJ-licensed MD), protocol on file`, `compliance.collaboration_agreement` unset (not needed for an RN, flagged only if the role widens to NP/PA). Labor band 4.
+
+**Compliance gates run:**
+- State scope: clear — RN injecting under a NJ-licensed physician's protocol.
+- Medical director: clear — named, protocol on file. Artifact 3 is observed by Dr. Nair.
+- NJ collaboration flag: **not triggered** for an RN role. Artifact 1 still carries a one-line note: "If this req is widened to NP/PA, the NJ proposed joint rule (pending, not adopted) would require a written collaboration agreement — draft it now; confirm status with counsel."
+- CA AB-489 / CO SB 26-189 / IA: not applicable.
+- **Gates pass — proceed to rubric.**
+
+**What changes vs. the colorist example:** weights switch to the RN / NP / PA row (25 / 15 / 15 / 25 / 5 / 15 — Documentation carries a quarter of the score); the specialty band is anatomy fluency plus vascular-event escalation; the working interview becomes a supervised consult-and-mapping exercise on a model with **no injection performed by an unhired candidate** (product administration happens only after credentialing and onboarding); the behavioral bank adds "Walk us through the last time you stopped a treatment mid-way. What did you see, who did you call, and what did you document?" *Listen for:* a named escalation to the supervising physician, not a solo judgment call.
+
 ### Notes for Owner
 
 If the rubric output flags any config gap, the skill surfaces it inline at the top of Artifact 1 — never silently passes. Common gaps:
@@ -247,3 +262,8 @@ If the rubric output flags any config gap, the skill surfaces it inline at the t
 - `compliance.medical_director` missing for a med-spa-* role → Compliance-Block, not a rubric.
 
 If the same gap shows up across two hiring cycles in a row, the skill recommends an upstream fix in `config.yml` rather than re-flagging it on every run.
+
+## Version History
+
+- **v1.1 (2026-10-13, skill-evaluator)** — Corrected two Compliance Hard Gates that blocked hires on rules that are not law: the NJ written-collaboration gate (the February 2026 joint rule is a *proposal*, adoption unconfirmed) and the IA supervision gate (HSB 591 was not enacted; its 60-mile / 4-hour figures were stated as a requirement). Both are now status-labelled soft flags, with an explicit status-discipline rule tying gate tier to KB status. Added a second worked example (NJ med-spa RN injector) showing how gates tier and how the kit changes for a clinical role. Removed a stale "v2026-Q3" routing note. Frontmatter `last_eval_score` set (was null).
+- **v1.0** — Initial build.

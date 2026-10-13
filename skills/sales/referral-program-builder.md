@@ -4,8 +4,8 @@ category: sales
 tools: [claude, chatgpt]
 difficulty: intermediate
 time_saved: "~30 min/program design"
-version: 1.2
-last_eval_score: 8.7
+version: 1.3
+last_eval_score: 9.2
 ---
 
 # Salon & Spa Referral Program Builder
@@ -113,7 +113,7 @@ Produce a referral program blueprint with these sections:
 
 ### Referral Program Blueprint — "Bring a Friend" for a Day Spa
 
-**Context assumed:** Day spa with $135 average ticket, 4-visit average annual frequency, target CAC $40, 60-minute signature facial is the margin-friendly anchor.
+**Context assumed:** Radiance Salon & Spa (day-spa menu, Boulevard for booking — supports per-client codes), $135 average ticket, 4-visit average annual frequency, target CAC $40, 60-minute signature facial is the margin-friendly anchor.
 
 **Program Names:**
 1. Bring a Friend — *Glow together.*
@@ -140,10 +140,10 @@ Produce a referral program blueprint with these sections:
 - Client must be 18+ to refer.
 
 **Share Asset — Pre-Written SMS from Referrer:**
-"I love [Spa Name]. You get $30 off your first signature facial with my code [CODE] — book here: [link]. I get a credit when you go, so win-win. Enjoy!"
+"I love Radiance Salon & Spa. You get $30 off your first signature facial with my code RS-K7M2QP - book here: radiancesalonspa.com/invite/K7M2QP. I get a credit when you go, so win-win. Enjoy!" (191 characters — two standard SMS segments. Keep it to plain characters: one curly quote or em dash switches the whole message to Unicode encoding and roughly doubles the segment count.)
 
 **Share Asset — Front-Desk Card:**
-Front: "Share the spa. Save together." | Back: "Your friend gets $30 off their first signature facial. You get $30 back when they visit. Scan to share: [QR]."
+Front: "Share the spa. Save together." | Back: "Your friend gets $30 off their first signature facial. You get $30 back when they visit. Scan to share." — the QR printed beside it encodes the referrer's own invite URL (radiancesalonspa.com/invite/ + their code), generated per client at checkout.
 
 **Tracking Mechanic:**
 - Unique 6-character code generated per referring client at checkout (printed on receipt and added to member profile).
@@ -171,3 +171,18 @@ Front: "Share the spa. Save together." | Back: "Your friend gets $30 off their f
 - **CAC ceiling (LTV ÷ 6–8):** ~$175–$235.
 - **Verdict: CLEARS.** $60 acquisition cost sits well under the $175–$235 ceiling, with headroom to run a double-reward push without breaching it. (Note the operator's $40 "target CAC" is a budget preference, not the economic test — the program clears on the LTV-derived ceiling even though $60 exceeds the $40 preference; flag this to the operator so the preference can be revised or the reward trimmed if they want to hold the $40 line.)
 - **Break-even:** at the day spa's contribution margin the new client covers the ~$60 program cost in ~1.5 repeat visits beyond the first — comfortably inside a referred client's typical first-6-month pattern.
+
+### Variant — Hybrid Med-Spa Menu (what changes when a `med-spa-*` cadence class is present)
+
+**Context assumed:** Same practice adds neuromodulator and laser services under a medical director; `services.cadence_class` mixes `facial-custom` and `injectable-cadence`; state = TX; `loyalty_program` configured.
+
+- **Anchor offer stays non-clinical.** The friend reward remains $30 off the signature facial. Injectables and laser are never the anchor and never carry a cash or discount reward, in any state.
+- **Referrer reward converts to loyalty points** (credited after the friend's completed first visit) and is redeemable on non-clinical services and retail only — no points or credit applied to injectable or laser spend.
+- **Share-asset copy is service-neutral for clinical work.** The SMS above stays as written; a referrer who is a Botox client gets no variant that mentions her treatment — clinical detail never appears in referral copy.
+- **Compliance block (extended mode):** TX anti-kickback flag on any reward touching a clinical service (none here, by design); medical-director sign-off line added to the launch checklist; reward copy screened for licensure-implying terms.
+- **Economics Check is unchanged** because the reward structure is unchanged — the clinical services simply sit outside the program.
+
+## Version History
+
+- **v1.3 (2026-10-13, skill-evaluator)** — Worked-example SMS and front-desk card no longer ship `[Spa Name]` / `[CODE]` / `[link]` / `[QR]` as live copy (the exact failure the skill's own Config Integration rule forbids); replaced with a concrete example business (Radiance Salon & Spa, used across the repo), a code in the documented prefix format, and an invite URL, plus an SMS-length note. Added a hybrid med-spa variant showing how the anchor, referrer reward, and share copy change when clinical services are on the menu. No rule, band, or gate changed.
+- **v1.2 and earlier** — no history recorded.

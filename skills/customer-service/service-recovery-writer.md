@@ -4,8 +4,8 @@ category: customer-service
 tools: [claude, chatgpt]
 difficulty: intermediate
 time_saved: "~25 min/incident"
-version: 1.1
-last_eval_score: 8.7
+version: 1.2
+last_eval_score: 9.1
 ---
 
 # Service Recovery Writer
@@ -177,11 +177,15 @@ Input: Client Jamie emails 36 hours after a balayage saying the color is "way to
 
 Triage: cosmetic-disappointment / AI-drafting allowed: yes / Best channel: email / Response window: 24h / Escalation: front-of-house manager + Maya.
 
-First-acknowledgement (warmer variant): "Hi Jamie — I read your email this morning and I want you to know I take this seriously. Color that does not feel like you is not the visit we want for you. I'm going to look at the photos from your appointment with Maya this afternoon and write you back personally before the end of the day tomorrow with a way forward. — [Owner first name]." (~ 60 words.)
+First-acknowledgement (warmer variant): "Hi Jamie — I read your email this morning, and I want you to know I take it seriously. Color that leaves you close to tears every time you look in the mirror is not the visit we want for you. I'm going to review your consult notes and appointment photos with our color team this afternoon, and I'll write back to you personally before the end of the day tomorrow with a way forward. — Alex, owner, Radiance Salon & Spa" (82 words.)
 
-Resolution-options reply (next day): leads with a complimentary toner refresh with senior stylist Sam this Friday at 11am or Saturday at 2pm, paired with a deep-conditioning treatment, and a $40 take-home retail credit toward toning shampoo. Closes with a 7-day window to respond and a direct reply path to the owner's email.
+First-acknowledgement (neutral variant): "Hi Jamie — thank you for writing in and for telling us plainly. The result you describe, brassier than the tone you agreed in your consult, is not what we aim to deliver, and I understand why it is upsetting. I am reviewing your consult notes and the photos from your appointment today with our color team. I will email you by the end of the day tomorrow with clear options for putting it right. — Alex, owner, Radiance Salon & Spa" (82 words.)
 
-Internal incident log: filed under 2026-04-25-J-001, severity cosmetic-disappointment, client framing quoted, internal facts noting that the consult notes specified a cool-toned bronde and the provider's process used a 20-volume developer where 10 was likely warranted, resolution offered noted at value $X, no insurance/legal flag, provider coaching note one line about developer-strength selection on prior-color clients, process improvement noting that the consult-card photo upload field went unused for this booking.
+*Reviewer note:* the provider who did the service is deliberately not named in either variant — per the asymmetric naming rule in Config Integration, provider accountability lives in the incident log only. The redo provider (Sam) may be named in Step 3 because that is a forward-looking offer, not a critique.
+
+Resolution-options reply (next day, after the reviewer confirms facts and offer): "Hi Jamie — thank you for your patience while I looked into this. I went through your consult notes and photos, and the warmth you're seeing is not the cool bronde we talked about. I'd like to put it right. I can hold a complimentary toner refresh with Sam, our senior colorist, this Friday at 11am or Saturday at 2pm — about 45 minutes — with a deep-conditioning treatment added. I've also put a $40 credit on your account toward a toning shampoo so the result holds at home. If neither time works, reply with what does and I'll make it happen. Please let me know by next Friday so I can keep the slot for you. You can reach me directly at alex@radiancesalonspa.com. — Alex" (126 words — within the 120–220 email band; offer stays inside the configured boundary: complimentary redo + $40 retail credit, no cash refund, no policy quoted, no promotion.)
+
+Internal incident log: filed under 2026-04-25-J-001, severity cosmetic-disappointment, client framing quoted, internal facts noting that the consult notes specified a cool-toned bronde and the provider's process used a 20-volume developer where 10 was likely warranted, resolution offered recorded at menu value (complimentary toner refresh and deep-conditioning add-on at their listed prices, plus the $40 retail credit — the reviewer enters the dollar total from the live menu, never an estimate), no insurance/legal flag, provider coaching note one line about developer-strength selection on prior-color clients, process improvement noting that the consult-card photo upload field went unused for this booking.
 
 **Example B — Physical reaction during a facial, day-of**
 
@@ -230,3 +234,8 @@ Every output of this skill is a draft for a human to read, edit, and personally 
 Channel selection respects the marketing-authorization records held under `ai-consent-and-compliance-guardrails` Artifact 2 only inasmuch as the client's stated channel preferences are honored — service-recovery messages are operational, not marketing, and do not require active marketing authorization to send. They do, however, require the same legal-defensibility standard as any other written communication: factual, non-admitting where fault is not established, and durable enough to live in an incident-log spreadsheet alongside the original client framing. For EU clients, the AI-disclosure clause from `ai-consent-and-compliance-guardrails` Artifact 1 covers the fact that the draft was AI-assisted; the response itself does not need to be re-disclosed inside the message.
 
 For physical-injury, allergic-reaction, property-damage, and data-or-privacy severities, the skill produces only the triage block and the incident-log entry — no client-facing draft — and instructs the human reviewer to handle the case directly with the practice's insurance broker and attorney loop.
+
+## Version History
+
+- **v1.2 (2026-10-13, skill-evaluator)** — Example A brought into line with the skill's own rules: the acknowledgement no longer names the provider who did the service (it violated the asymmetric naming rule), the `[Owner first name]` sign-off and the `$X` log value are replaced with a concrete owner and a menu-value instruction, the missing neutral voicing variant is added (Step 2 requires two), and the resolution reply is written out in full with its word count instead of summarized. Example business is Radiance Salon & Spa, used across the repo. No rule, gate, or KPI changed.
+- **v1.1 and earlier** — no history recorded.
